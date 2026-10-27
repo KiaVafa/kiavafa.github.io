@@ -306,8 +306,6 @@ footer small{color:var(--muted);font-size:13px}
     </div>
     <div class="more rv"><a href="#clips">Watch the clips</a><a href="#services">Prices</a></div>
   </div>
-  <audio id="aRaw" src="assets/audio/wrong-miss-raw.mp3" preload="metadata" crossorigin="anonymous"></audio>
-  <audio id="aMix" src="assets/audio/wrong-miss-mixed.mp3" preload="metadata" crossorigin="anonymous"></audio>
 </header>
 
 
@@ -488,41 +486,48 @@ lb.querySelector('.x').onclick=closeLb;lb.addEventListener('click',e=>{if(e.targ
 /* copy bio */
 document.getElementById('copyBio').onclick=e=>{navigator.clipboard.writeText(document.getElementById('bioText').textContent).then(()=>{e.target.textContent='Copied ✓';setTimeout(()=>e.target.textContent='Copy bio',1800)})};
 
-/* A/B player (B) */
-const raw=document.getElementById('aRaw'),mix=document.getElementById('aMix');
+/* A/B player: both versions are decoded into memory and started on the same audio clock,
+   so RAW/MIXED switching is a gain crossfade at the exact same sample, with no seek and no gap. */
 const sw=document.getElementById('pSwitch'),bar=document.getElementById('pBar'),fill=bar.querySelector('i');
 window.KV={side:'raw',analyser:null,data:null,playing:false};
-let actx=null;
-// iPhone/iPad: Web Audio is silenced by the ringer switch and element volume is read-only,
-// so on iOS we skip the analyser and switch versions with muted instead.
-const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-const ensureCtx=()=>{if(actx||isIOS)return;try{actx=new AudioContext();const an=actx.createAnalyser();an.fftSize=256;
-  [raw,mix].forEach(a=>{const src=actx.createMediaElementSource(a),g=actx.createGain();src.connect(g);g.connect(an);a._g=g});an.connect(actx.destination);
-  KV.analyser=an;KV.data=new Uint8Array(an.frequencyBinCount);setGains()}catch(e){}};
-const setGains=()=>{const r=KV.side==='raw'?1:0;if(raw._g){raw._g.gain.value=r;mix._g.gain.value=1-r}else{raw.muted=!r;mix.muted=!!r}};
-setGains();
+let actx=null,gR=null,gM=null,bufs={},cur={raw:null,mix:null},srcs=[],startedAt=0,offset=0,loadTok=0,ready=Promise.resolve();
+const ctx=()=>{if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();const an=actx.createAnalyser();an.fftSize=256;
+  gR=actx.createGain();gM=actx.createGain();gR.connect(an);gM.connect(an);an.connect(actx.destination);
+  KV.analyser=an;KV.data=new Uint8Array(an.frequencyBinCount);applySide(true)}return actx};
+const load=async u=>{if(bufs[u])return bufs[u];const ab=await(await fetch(u)).arrayBuffer();
+  return bufs[u]=await new Promise((res,rej)=>ctx().decodeAudioData(ab,res,rej))};
+const dur=()=>cur.raw&&cur.mix?Math.min(cur.raw.duration,cur.mix.duration):0;
+const pos=()=>KV.playing?Math.min(offset+actx.currentTime-startedAt,dur()):offset;
 const ico=p=>{document.getElementById('icoPlay').style.display=p?'none':'';document.getElementById('icoPause').style.display=p?'':'none'};
-const startAB=()=>{ensureCtx();actx&&actx.resume();mix.currentTime=raw.currentTime;Promise.all([raw.play(),mix.play()]).catch(()=>{});KV.playing=true;ico(true)};
-function stopAB(){raw.pause();mix.pause();KV.playing=false;ico(false)}
-document.getElementById('pPlay').onclick=()=>raw.paused?startAB():stopAB();
+function applySide(now){if(!gR)return;const t=actx.currentTime,r=KV.side==='raw'?1:0;
+  [[gR,r],[gM,1-r]].forEach(([g,v])=>{g.gain.cancelScheduledValues(t);
+    if(now)g.gain.setValueAtTime(v,t);else{g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(v,t+.02)}})}
+function killSrcs(){srcs.forEach(s=>{s.onended=null;try{s.stop()}catch(e){}});srcs=[]}
+function startAt(o){killSrcs();const t=actx.currentTime+.03;
+  [[cur.raw,gR],[cur.mix,gM]].forEach(([b,g])=>{const s=actx.createBufferSource();s.buffer=b;s.connect(g);s.start(t,o);srcs.push(s)});
+  srcs[0].onended=()=>{if(KV.playing&&pos()>=dur()-.06){stopAB();offset=0}};
+  startedAt=t;offset=o;KV.playing=true;ico(true)}
+async function startAB(){ctx();try{await actx.resume()}catch(e){}await ready;if(!cur.raw)return;startAt(offset>=dur()-.05?0:offset)}
+function stopAB(){if(KV.playing)offset=pos();killSrcs();KV.playing=false;ico(false)}
+function seek(t){offset=Math.max(0,Math.min(t,dur()));if(KV.playing)startAt(offset)}
+function selectTrack(r,m){const tok=++loadTok;stopAB();offset=0;cur={raw:null,mix:null};fill.style.width='0';
+  ready=Promise.all([load(r),load(m)]).then(([a,b])=>{if(tok===loadTok)cur={raw:a,mix:b}}).catch(()=>{});return ready}
+document.getElementById('pPlay').onclick=()=>KV.playing?stopAB():startAB();
 sw.querySelectorAll('button').forEach(b=>b.onclick=()=>{
   KV.side=b.dataset.v;sw.classList.toggle('mixed',KV.side==='mixed');sw.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-  if(Math.abs(mix.currentTime-raw.currentTime)>.06)mix.currentTime=raw.currentTime;setGains();if(raw.paused)startAB()});
-raw.addEventListener('timeupdate',()=>{fill.style.width=(raw.currentTime/raw.duration*100||0)+'%';if(Math.abs(mix.currentTime-raw.currentTime)>.12)mix.currentTime=raw.currentTime});
-raw.addEventListener('ended',stopAB);
+  ctx();applySide(false);if(!KV.playing)startAB()});
+bar.onclick=e=>{const r=bar.getBoundingClientRect();seek((e.clientX-r.left)/r.width*dur())};
 let ws=null;
 const drawWave=url=>{if(!window.WaveSurfer)return;if(ws)ws.destroy();
-  ws=WaveSurfer.create({container:'#wave',url,height:64,waveColor:'#3a3a44',progressColor:'#f5b84a',cursorColor:'transparent',barWidth:2,barGap:1,barRadius:2,normalize:true,interact:true,media:undefined});
-  ws.setVolume(0);ws.on('interaction',t=>{raw.currentTime=t;mix.currentTime=t});};
-drawWave(mix.getAttribute('src'));
-raw.addEventListener('timeupdate',()=>{if(ws&&raw.duration)ws.setTime(raw.currentTime)});
-document.querySelectorAll('#tracks button').forEach(b=>b.onclick=()=>{
-  const was=!raw.paused;stopAB();raw.src=b.dataset.raw;mix.src=b.dataset.mix;raw.load();mix.load();fill.style.width='0';drawWave(b.dataset.mix);
-  document.querySelectorAll('#tracks button').forEach(x=>x.classList.toggle('on',x===b));
+  ws=WaveSurfer.create({container:'#wave',url,height:64,waveColor:'#3a3a44',progressColor:'#f5b84a',cursorColor:'transparent',barWidth:2,barGap:1,barRadius:2,normalize:true,interact:true});
+  ws.setVolume(0);ws.on('interaction',t=>seek(t))};
+(function tick(){const d=dur(),p=pos();if(d){fill.style.width=(p/d*100)+'%';if(ws&&ws.getDuration())ws.setTime(Math.min(p,ws.getDuration()))}requestAnimationFrame(tick)})();
+const first=document.querySelector('#tracks button.on');selectTrack(first.dataset.raw,first.dataset.mix);drawWave(first.dataset.mix);
+document.querySelectorAll('#tracks button').forEach(b=>b.onclick=async()=>{
+  const was=KV.playing;document.querySelectorAll('#tracks button').forEach(x=>x.classList.toggle('on',x===b));
   const pt=document.getElementById('pTitle');pt.textContent='';const bb=document.createElement('b');bb.textContent=b.querySelector('b').textContent;pt.append(bb,' · '+b.dataset.note);
-  if(was)startAB()});
-bar.onclick=e=>{const r=bar.getBoundingClientRect(),t=(e.clientX-r.left)/r.width*(raw.duration||0);raw.currentTime=t;mix.currentTime=t};
+  drawWave(b.dataset.mix);await selectTrack(b.dataset.raw,b.dataset.mix);startAB()});
 </script>
 
 <!-- Sound orb: Three.js particles that react to the player. Calm and grey on RAW, busy and amber on MIXED. No mouse interaction. -->
@@ -542,13 +547,13 @@ const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:T
    float t=time*(.6+hot*1.6);
    float n1=sin(p.x*3.+t)*cos(p.y*3.5-t*.8)*sin(p.z*2.5+t*.6);
    float n2=sin(p.x*9.+t*2.3)*sin(p.y*8.-t*1.7)*cos(p.z*7.+t*2.1);
-   float amp=.07+hot*.42+mid*(.3+hot*.9);
-   float r=1.5+n1*amp+n2*hot*.22+bass*(.4+hot*1.6)*seed;
-   float shell=step(.82,seed)*hot*(.45+bass*.9);
+   float amp=.07+hot*.14+mid*(.3+hot*.3);
+   float r=1.5+n1*amp+n2*hot*.08+bass*(.4+hot*.45)*seed;
+   float shell=step(.86,seed)*hot*(.1+bass*.25);
    r+=shell;
    p*=r;vE=shell+hot*n2*.5+bass*hot;
    vS=seed;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;
-   gl_PointSize=(1.2+seed*2.+hot*(1.6+seed*2.)+bass*(2.+hot*5.))*(6./-mv.z);}`,
+   gl_PointSize=(1.2+seed*2.+hot*(.8+seed*1.2)+bass*(2.+hot*2.))*(6./-mv.z);}`,
  fragmentShader:`uniform float hot;varying float vS;varying float vE;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;
   vec3 grey=vec3(.5,.52,.6),amber=vec3(1.,.72,.29),white=vec3(1.,.93,.8);
   vec3 c=mix(grey,amber,clamp(hot*.9+vS*.1,0.,1.));c=mix(c,white,clamp(vE*.8,0.,1.)*hot);
@@ -565,7 +570,7 @@ renderer.setAnimationLoop(t=>{
   else{bass+=((Math.sin(t/900)*.5+.5)*.05-bass)*.05;mid*=.96}
   hot+=((K.side==='mixed'?1:0)-hot)*.06;
   mat.uniforms.time.value=t/1000;mat.uniforms.bass.value=bass;mat.uniforms.mid.value=mid;mat.uniforms.hot.value=hot;
-  pts.rotation.y+=.0012+hot*.006+bass*hot*.02;pts.rotation.x=Math.sin(t/4000)*.15+hot*Math.sin(t/700)*.08;
+  pts.rotation.y+=.0012+hot*.004+bass*hot*.008;pts.rotation.x=Math.sin(t/4000)*.15+hot*Math.sin(t/700)*.08;
   renderer.render(scene,cam)});
 </script>
 </body>
