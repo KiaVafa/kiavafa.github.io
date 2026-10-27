@@ -493,10 +493,14 @@ const raw=document.getElementById('aRaw'),mix=document.getElementById('aMix');
 const sw=document.getElementById('pSwitch'),bar=document.getElementById('pBar'),fill=bar.querySelector('i');
 window.KV={side:'raw',analyser:null,data:null,playing:false};
 let actx=null;
-const ensureCtx=()=>{if(actx)return;try{actx=new AudioContext();const an=actx.createAnalyser();an.fftSize=256;
+// iPhone/iPad: Web Audio is silenced by the ringer switch and element volume is read-only,
+// so on iOS we skip the analyser and switch versions with muted instead.
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+const ensureCtx=()=>{if(actx||isIOS)return;try{actx=new AudioContext();const an=actx.createAnalyser();an.fftSize=256;
   [raw,mix].forEach(a=>{const src=actx.createMediaElementSource(a),g=actx.createGain();src.connect(g);g.connect(an);a._g=g});an.connect(actx.destination);
   KV.analyser=an;KV.data=new Uint8Array(an.frequencyBinCount);setGains()}catch(e){}};
-const setGains=()=>{const r=KV.side==='raw'?1:0;if(raw._g){raw._g.gain.value=r;mix._g.gain.value=1-r}else{raw.volume=r;mix.volume=1-r}};
+const setGains=()=>{const r=KV.side==='raw'?1:0;if(raw._g){raw._g.gain.value=r;mix._g.gain.value=1-r}else{raw.muted=!r;mix.muted=!!r}};
 setGains();
 const ico=p=>{document.getElementById('icoPlay').style.display=p?'none':'';document.getElementById('icoPause').style.display=p?'':'none'};
 const startAB=()=>{ensureCtx();actx&&actx.resume();mix.currentTime=raw.currentTime;Promise.all([raw.play(),mix.play()]).catch(()=>{});KV.playing=true;ico(true)};
