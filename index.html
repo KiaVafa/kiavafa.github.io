@@ -175,6 +175,14 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:7
 .clip .cap{position:absolute;left:0;right:0;bottom:0;padding:70px 18px 18px;background:linear-gradient(transparent,rgba(0,0,0,.9));transform:translateZ(30px)}
 .clip .cap .eyebrow{font-size:10px;margin-bottom:6px}
 .clip .cap h3{font-size:17px}
+.game{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:40px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:28px;background:linear-gradient(135deg,rgba(255,214,140,.06),rgba(11,11,13,0) 60%)}
+.game .shot{aspect-ratio:9/16;border-radius:22px;overflow:hidden;border:6px solid #1a1a1f;box-shadow:0 30px 60px rgba(0,0,0,.5);background:#070b1f}
+.game .shot img{width:100%;height:100%;object-fit:cover;display:block}
+.game h3{font-size:clamp(26px,3vw,38px);margin:10px 0 12px}
+.game p{color:var(--muted);max-width:520px}
+.game .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center}
+.game .meta{font-size:13px;color:var(--muted)}
+@media (max-width:720px){.game{grid-template-columns:1fr;padding:20px}.game .shot{max-width:240px;margin:0 auto}}
 
 /* lightbox */
 .lb{position:fixed;inset:0;z-index:150;background:rgba(5,5,7,.92);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:30px}
@@ -276,6 +284,7 @@ footer small{color:var(--muted);font-size:13px}
 
       <a href="#services">Services</a>
       <a href="#about">About</a>
+      <a href="#game">Game</a>
             <a href="#contact" class="btn btn-amber mag">Send your track</a>
     </div>
   </div>
@@ -322,6 +331,27 @@ footer small{color:var(--muted);font-size:13px}
       <div class="clip rv" data-src="assets/video/moveon-ba3.mp4"><img src="assets/img/poster-moveon-ba3.jpg" alt="Move On before and after" loading="lazy"><video muted loop playsinline preload="none" src="assets/video/moveon-ba3.mp4"></video><div class="glare"></div><div class="cap"><div class="eyebrow">Mixing &amp; mastering</div><h3>Move On · lanterns</h3></div></div>
       <div class="clip rv" data-src="assets/video/sky-whale.mp4"><img src="assets/img/poster-sky-whale.jpg" alt="Sky Whale Festival AI music video" loading="lazy"><video muted loop playsinline preload="none" src="assets/video/sky-whale.mp4"></video><div class="glare"></div><div class="cap"><div class="eyebrow">Music video</div><h3>Sky Whale Festival</h3></div></div>
       <div class="clip rv" data-src="assets/video/sunken-opera.mp4"><img src="assets/img/poster-sunken-opera.jpg" alt="Sunken Opera AI music video" loading="lazy"><video muted loop playsinline preload="none" src="assets/video/sunken-opera.mp4"></video><div class="glare"></div><div class="cap"><div class="eyebrow">Music video</div><h3>Sunken Opera</h3></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="game">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="eyebrow rv">Game design</div><h2 class="split">I also design games. Here is one of mine.</h2></div>
+      <p class="rv">Besides music, website design and AI video, I design and build games. Snake Rumble is a sample of that work: a fast snake arena that runs right in the browser on phone or desktop, with my own tracks under it.</p>
+    </div>
+    <div class="game rv">
+      <a class="shot mag" href="snake-rumble/" target="_blank" rel="noopener" aria-label="Play Snake Rumble"><img src="assets/img/snake-rumble.jpg" alt="Snake Rumble gameplay" loading="lazy"></a>
+      <div>
+        <div class="eyebrow">Snake Rumble</div>
+        <h3>Cut in front of them. Make them crash into you.</h3>
+        <p>Drag to steer, eat glowing orbs to grow, and cut across the path of rival snakes so their head hits your body. Rounds last 75 seconds, get harder every 12, and end with a boss hunt. Free, no install, no ads, no sign-up.</p>
+        <div class="row">
+          <a class="btn btn-amber mag" href="snake-rumble/" target="_blank" rel="noopener">Play in browser</a>
+          <span class="meta">Touch · mouse · keyboard · 1 MB</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
