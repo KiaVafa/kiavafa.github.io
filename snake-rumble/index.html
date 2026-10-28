@@ -341,8 +341,8 @@
   // a random spot in a ring around the player (the field is endless, so everything is made near the action)
   function randPos(minR = 0, maxR = FIELD - 100) { const c = centre(), a = Math.random() * Math.PI * 2, r = Math.sqrt(rand((minR / maxR) ** 2, 1)) * maxR; return { x: c.x + Math.cos(a) * r, y: c.y + Math.sin(a) * r }; }
 
-  function makeSnake(lv, skin, name, pos, isBot) {
-    const s = { lv, skin, name, bot: isBot, dead: false, ang: Math.random() * Math.PI * 2, want: 0, speed: 150, segs: [], boost: 0, magnet: 40, think: 0, target: null, flash: 0, spawnT: 0, skill: 0.7, aggro: 0.1, range: 300, huntT: 0, boostT: 0, coil: 0 };
+  function makeSnake(lv, skin, name, pos, isBot, ang) {
+    const s = { lv, skin, name, bot: isBot, dead: false, ang: typeof ang === 'number' ? ang : Math.random() * Math.PI * 2, want: 0, speed: 150, segs: [], boost: 0, magnet: 40, think: 0, target: null, flash: 0, spawnT: 0, skill: 0.7, aggro: 0.1, range: 300, huntT: 0, boostT: 0, coil: 0 };
     s.want = s.ang;
     const sp0 = radFor(lv) * 0.9;
     for (let i = 0; i < lenFor(lv); i++) s.segs.push({ x: pos.x - Math.cos(s.ang) * i * sp0, y: pos.y - Math.sin(s.ang) * i * sp0 });
@@ -374,8 +374,9 @@
       ok = !snakes.some(o => !o.dead && o !== player && Math.hypot(o.segs[0].x - p.x, o.segs[0].y - p.y) < 220);
     }
     if (!ok) p = randPos(seenR() + 100, seenR() + 500);
-    const b = makeSnake(botLevel(), SKINS[Math.floor(Math.random() * SKINS.length)], freeName(), p, true);
-    b.spawnT = 1; b.want = b.ang = Math.atan2(ph.y - p.y, ph.x - p.x) + rand(-1, 1); tune(b); snakes.push(b);
+    // head faces the player, so the body is laid out behind it, away from the screen: nothing ever pops into view
+    const b = makeSnake(botLevel(), SKINS[Math.floor(Math.random() * SKINS.length)], freeName(), p, true, Math.atan2(ph.y - p.y, ph.x - p.x) + rand(-0.6, 0.6));
+    b.spawnT = 1; b.want = b.ang; tune(b); snakes.push(b);
   }
 
   function newRound() {
@@ -628,7 +629,8 @@
     const top = Math.max(...snakes.filter(s => !s.dead).map(s => s.lv));
     const h = player.segs[0], a = Math.random() * Math.PI * 2;
     const bd = seenR() + 150; let p = { x: h.x + Math.cos(a) * bd, y: h.y + Math.sin(a) * bd };
-    boss = makeSnake(Math.round(Math.max(top * 1.15, player.lv * 1.5, 60)), ['#2b2d42', '#ff4d5e'], 'BOSS', p, true);
+    boss = makeSnake(Math.round(Math.max(top * 1.15, player.lv * 1.5, 60)), ['#2b2d42', '#ff4d5e'], 'BOSS', p, true, Math.atan2(h.y - p.y, h.x - p.x));
+    boss.want = boss.ang;
     boss.speed = 128 + heat * 3; boss.spawnT = 1.5; boss.skill = 0.95; boss.aggro = 0.85; boss.range = 1400; boss.role = 'hunter'; snakes.push(boss);
     $('timer').classList.add('boss'); toast('BOSS INCOMING!');
     blip(110, 55, 0.8, 0.4, 'sawtooth');
