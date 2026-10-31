@@ -22,6 +22,7 @@
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   .ov { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; padding: 24px; text-align: center; background: rgba(8,11,36,.72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
   .ov.show { display: flex; }
+  .ov { overflow-y: auto; justify-content: safe center; }
   #menu { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .t { font-weight: 900; -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 0 4px 0 var(--ink); }
   h1 { font-size: clamp(44px, 12vmin, 84px); line-height: .95; letter-spacing: 1px; }
@@ -88,6 +89,14 @@
   .big { font-size: clamp(54px, 16vmin, 96px); color: var(--gold); }
   .new { color: var(--green); font-size: 18px; font-weight: 900; animation: pulse .8s ease-in-out infinite alternate; }
   @keyframes pulse { to { transform: scale(1.12); } }
+  @media (max-height: 520px) {
+    .ov { gap: 8px; padding: 10px 16px; }
+    h1 { font-size: 40px; } h2 { font-size: 26px; } .big { font-size: 44px; } .sub { font-size: 13px; }
+    .btn { font-size: 18px; padding: 10px 24px; min-width: 170px; } .btn.small { font-size: 14px; padding: 8px 14px; }
+    .pill { font-size: 13px; padding: 5px 10px; } .mrow { font-size: 12px; padding: 2px 0; } .mlist { padding: 6px 12px; }
+    .panel { padding: 12px; gap: 8px; } .tg { padding: 8px 12px; font-size: 15px; } .credit { display: none; }
+    #themes { grid-template-columns: repeat(6, 1fr); } .th { font-size: 11px; }
+  }
 </style>
 </head>
 <body class="menu">
@@ -336,33 +345,16 @@
     cells = [];
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const t = makeTile(-(ROWS + 2) + r * 0.15); t.kind = 0; cells.push(t); }
   }
-  // Every sum that a valid path (2..7 tiles) can make right now.
-  function achievable(maxSum) {
-    const found = new Map(); // sum -> shortest length
-    const used = new Uint8Array(COLS * ROWS);
-    const dfs = (c, r, sum, len) => {
-      if (len >= 2) { const p = found.get(sum); if (p === undefined || len < p) found.set(sum, len); }
-      if (len >= 7) return;
-      for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) {
-        if (!dc && !dr) continue;
-        const nc = c + dc, nr = r + dr, t = at(nc, nr);
-        if (!t || used[nr * COLS + nc]) continue;
-        const s = sum + t.v; if (s > maxSum) continue;
-        used[nr * COLS + nc] = 1; dfs(nc, nr, s, len + 1); used[nr * COLS + nc] = 0;
-      }
-    };
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { used[r * COLS + c] = 1; dfs(c, r, at(c, r).v, 1); used[r * COLS + c] = 0; }
-    return found;
-  }
   // One path that hits `target`, preferring 3+ tiles (used for hints).
   function findPath(target) {
+    const quick = walksFor(target, 900); if (quick.length) { quick.sort((a, b) => (b.len >= 3) - (a.len >= 3) || a.len - b.len); return quick[0].path; }
     const order = []; for (let i = 0; i < COLS * ROWS; i++) order.push(i);
     order.sort(() => Math.random() - 0.5);
     const used = new Uint8Array(COLS * ROWS); let best = null;
     const path = [];
     const dfs = (c, r, sum) => {
       if (sum === target && path.length >= 2) { if (!best || (best.length < 3 && path.length >= 3)) best = path.slice(); return best.length >= 3; }
-      if (path.length >= 6) return false;
+      if (path.length >= 7) return false;
       for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) {
         if (!dc && !dr) continue;
         const nc = c + dc, nr = r + dr, t = at(nc, nr);
@@ -381,50 +373,54 @@
     }
     return best;
   }
-  // Is there a path of exactly `len` tiles that makes `target`? (decides the bonus challenge)
-  function hasPathLen(tg, len) {
-    const used = new Uint8Array(COLS * ROWS);
-    const dfs = (c, r, sum, n) => {
-      if (n === len) return sum === tg;
-      for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) {
-        if (!dc && !dr) continue;
-        const nc = c + dc, nr = r + dr, t = at(nc, nr);
-        if (!t || used[nr * COLS + nc] || sum + t.v > tg) continue;
-        used[nr * COLS + nc] = 1; if (dfs(nc, nr, sum + t.v, n + 1)) return true; used[nr * COLS + nc] = 0;
+  // Fast board scan: random walks of up to 7 touching tiles. Every sum a walk makes is a real, makeable path,
+  // so picking targets from these never needs the slow full search (that took ~40 ms per clear on a desktop).
+  function sampleWalks(n) {
+    const out = [], used = new Uint8Array(COLS * ROWS), nb = [];
+    for (let k = 0; k < n; k++) {
+      used.fill(0);
+      let c = ri(0, COLS - 1), r = ri(0, ROWS - 1), sum = at(c, r).v; used[r * COLS + c] = 1;
+      const pth = [{ c, r }], L = ri(2, 7);
+      while (pth.length < L) {
+        nb.length = 0;
+        for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) { const nc = c + dc, nr = r + dr; if ((dc || dr) && at(nc, nr) && !used[nr * COLS + nc]) nb.push(nr * COLS + nc); }
+        if (!nb.length) break;
+        const i = nb[ri(0, nb.length - 1)]; c = i % COLS; r = Math.floor(i / COLS); used[i] = 1; sum += at(c, r).v; pth.push({ c, r });
+        out.push({ sum, len: pth.length, path: pth.slice() });
       }
-      return false;
-    };
-    for (let i = 0; i < COLS * ROWS; i++) { const c = i % COLS, r = Math.floor(i / COLS); used.fill(0); used[i] = 1; if (dfs(c, r, at(c, r).v, 1)) return true; }
-    return false;
+    }
+    return out;
   }
+  function walksFor(tg, n) { return sampleWalks(n).filter(w => w.sum === tg); }
   function targetRange() {
     if (mode === 'zen') return [6, 16];
     return [Math.min(13, 4 + level), Math.min(26, 8 + level * 2)];
   }
   function pickTarget() {
     const [lo, hi] = targetRange();
-    const sums = achievable(hi + 4);
-    let pool = [...sums.keys()].filter(s => s >= lo && s <= hi && s !== target);
-    if (!pool.length) pool = [...sums.keys()].filter(s => s >= lo && s !== target);
-    if (!pool.length) pool = [...sums.keys()];
+    const walks = sampleWalks(260), sums = new Set(walks.map(w => w.sum));
+    let pool = [...sums].filter(s => s >= lo && s <= hi && s !== target);
+    if (!pool.length) pool = [...sums].filter(s => s >= lo && s !== target);
+    if (!pool.length) pool = [...sums];
     if (!pool.length) { fillBoard(); return pickTarget(); } // practically impossible; keeps the game safe
     // lean towards bigger targets as levels go up: they need longer, more satisfying paths
     pool.sort((a, b) => a - b);
     const bias = mode === 'zen' ? 0.5 : Math.min(0.85, 0.35 + level * 0.06);
     const idx = Math.min(pool.length - 1, Math.floor(Math.pow(Math.random(), 1 - bias) * pool.length));
     target = pool[idx]; targetPop = 1; hintPath = null; idleT = 0;
-    setWant();
+    if (!walks.some(w => w.sum === target) && !findPath(target)) { fillBoard(); return pickTarget(); }
+    setWant(walks.filter(w => w.sum === target));
   }
   // Optional challenge: hit the target with exactly N tiles for extra points and time.
-  function setWant() {
+  function setWant(ws) {
     want = 0;
     if (!save.tut || Math.random() > 0.55) return;
-    const opts = []; for (let n = 3; n <= Math.min(7, 3 + Math.floor(level / 2) + 1); n++) opts.push(n);
-    opts.sort(() => Math.random() - 0.5);
-    for (const n of opts) if (hasPathLen(target, n)) { want = n; return; }
+    const maxN = Math.min(7, 4 + Math.floor(level / 2));
+    const lens = [...new Set(ws.map(w => w.len))].filter(n => n >= 3 && n <= maxN);
+    if (lens.length) want = lens[ri(0, lens.length - 1)];
   }
   // keep the current target if the board can still make it, otherwise pick a new one
-  function keepOrPick() { if (achievable(target).has(target)) { if (want && !hasPathLen(target, want)) want = 0; } else pickTarget(); hintPath = null; }
+  function keepOrPick() { const ws = walksFor(target, 600); if (ws.length || findPath(target)) { if (want && !ws.some(w => w.len === want)) want = 0; } else pickTarget(); hintPath = null; }
 
   // =====================================================================
   // Game state
@@ -506,7 +502,7 @@
     burst(q.x, q.y, tileColor(t.v), 22); rings.push({ x: q.x, y: q.y, t: 0, col: '#fff' });
     ghosts.push({ t: 0, x: q.x - cell / 2, y: q.y - cell / 2, tile: { v: t.v, kind: t.kind, born: 1, id: t.id } });
     if (t.kind === 1) { starsGot++; goldGot++; if (mode === 'rush') timeLeft = Math.min(timeMax, timeLeft + 3); }
-    cells[p.r * COLS + p.c] = null; collapse();
+    path = []; dragging = false; cells[p.r * COLS + p.c] = null; collapse();
     save.ham--; armed = null; writeSave(); renderPowers();
     tone(90, 0.25, 0.3, 'sawtooth'); tone(60, 0.3, 0.25, 'sine', 0.02); shake = 0.6; buzz(40);
     keepOrPick(); checkMissions();
@@ -514,7 +510,7 @@
   function shuffleBoard() {
     if (!save.shf || state !== 'play' || paused) return;
     const vals = cells.map(t => t); for (let i = vals.length - 1; i > 0; i--) { const j = ri(0, i); [vals[i], vals[j]] = [vals[j], vals[i]]; }
-    cells = vals; cells.forEach(t => { t.born = 0; t.off = 0; t.vel = 0; });
+    path = []; dragging = false; cells = vals; cells.forEach(t => { t.born = 0; t.off = 0; t.vel = 0; });
     save.shf--; armed = null; writeSave(); renderPowers();
     for (let i = 0; i < 6; i++) tone(noteHz(4 + i * 2), 0.18, 0.12, 'triangle', i * 0.04); flash = 0.4; buzz(20);
     keepOrPick();
@@ -548,7 +544,7 @@
     path.forEach(p => { cells[p.r * COLS + p.c] = null; });
     collapse();
     if (!save.tut) { save.tut = 1; writeSave(); renderPowers(); }
-    if (clears % CLEARS_PER_LEVEL === 0 && mode === 'rush') { level++; sLevel(); banner = 1.6; bannerTxt = 'LEVEL ' + level; Plat.msg('player_got_achievement'); const k = Math.random() < 0.5 ? 'ham' : 'shf'; save[k] = Math.min(99, save[k] + 1); writeSave(); renderPowers(); addFloat(k === 'ham' ? '+1 🔨' : '+1 🔀', '#ffd23f', false, W / 2, boardY + boardH / 2 + 50); }
+    if (clears % CLEARS_PER_LEVEL === 0 && mode === 'rush') { level++; sLevel(); banner = 1.6; bannerTxt = 'LEVEL ' + level; Plat.msg('player_got_achievement'); if (level % 3 === 0) { const k = Math.random() < 0.5 ? 'ham' : 'shf'; save[k] = Math.min(99, save[k] + 1); writeSave(); renderPowers(); addFloat(k === 'ham' ? '+1 🔨' : '+1 🔀', '#ffd23f', false, W / 2, boardY + boardH / 2 + 50); } }
     else if (mode === 'zen' && clears % 10 === 0) { level++; }
     path = []; pickTarget(); checkMissions();
   }
@@ -560,7 +556,7 @@
     const prevBest = isZen ? save.bestZen : save.best;
     const isBest = score > prevBest;
     if (isBest) { if (isZen) save.bestZen = score; else save.best = score; Plat.msg('player_got_achievement'); }
-    lastCoins = Math.floor(score / (isZen ? 120 : 60)) + goldGot * 2;
+    lastCoins = Math.round(Math.sqrt(score) / (isZen ? 5 : 3)) + goldGot * 2; // grows slower than score so themes stay a goal
     save.coins += lastCoins; save.games++; writeSave();
     $('resTitle').textContent = isZen ? 'NICE SESSION' : 'GAME OVER';
     $('resScore').textContent = score.toLocaleString('en-US');
@@ -580,20 +576,33 @@
   // =====================================================================
   // Layout + drawing
   // =====================================================================
-  let W = 0, H = 0, dpr = 1, cell = 50, boardX = 0, boardY = 0, boardW = 0, boardH = 0, hudY = 0, safeTop = 0;
+  let land = false, hud = {}, W = 0, H = 0, dpr = 1, cell = 50, boardX = 0, boardY = 0, boardW = 0, boardH = 0, hudY = 0, safeTop = 0;
   function resize() {
     dpr = Math.min(2.5, window.devicePixelRatio || 1);
     W = innerWidth; H = innerHeight;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    safeTop = 8;
-    const topH = Math.max(150, Math.min(200, H * 0.22)), botH = 84;
-    cell = Math.floor(Math.min((W - 24) / COLS, (H - topH - botH) / ROWS, 92));
-    boardW = cell * COLS; boardH = cell * ROWS;
-    boardX = Math.round((W - boardW) / 2);
-    boardY = Math.round(topH + (H - topH - botH - boardH) / 2);
-    hudY = safeTop;
-    $('powers').style.top = (boardY + boardH + 18) + 'px';
-    const pb = $('pauseBtn'); pb.style.left = Math.max(12, boardX) + 'px'; pb.style.top = (hudY + 6) + 'px';
+    safeTop = 8; hudY = safeTop;
+    land = W > H * 1.2; // wide screens (phone sideways, desktop): HUD on the left, power-ups on the right
+    const pw = $('powers'), pb = $('pauseBtn');
+    if (land) {
+      cell = Math.floor(Math.min((H - 44) / ROWS, (W * 0.62) / COLS, 92));
+      boardW = cell * COLS; boardH = cell * ROWS;
+      boardX = Math.round((W - boardW) / 2); boardY = Math.round((H - boardH) / 2 + 12);
+      const side = W - boardX - boardW;
+      pw.style.cssText = 'top:50%;transform:translateY(-50%);flex-direction:column;align-items:center;left:' + (boardX + boardW) + 'px;right:auto;width:' + side + 'px';
+      pb.style.left = (W - 58) + 'px'; pb.style.top = '12px';
+      hud = { cx: boardX / 2, scoreX: boardX / 2, scoreA: 'center', scoreY: 18, levelX: boardX / 2, levelA: 'center', levelY: H - 52, ty: H * 0.47, rad: Math.max(26, Math.min(62, boardX * 0.26, H * 0.15)), maxW: boardX - 16 };
+    } else {
+      const topH = Math.max(150, Math.min(200, H * 0.22)), botH = 84;
+      cell = Math.floor(Math.min((W - 24) / COLS, (H - topH - botH) / ROWS, 92));
+      boardW = cell * COLS; boardH = cell * ROWS;
+      boardX = Math.round((W - boardW) / 2);
+      boardY = Math.round(topH + (H - topH - botH - boardH) / 2);
+      pw.style.cssText = 'top:' + (boardY + boardH + 18) + 'px';
+      pb.style.left = Math.max(12, boardX) + 'px'; pb.style.top = (hudY + 6) + 'px';
+      const left = Math.max(12, boardX) + 56, right = Math.min(W - 12, boardX + boardW);
+      hud = { cx: W / 2, scoreX: left, scoreA: 'left', scoreY: hudY, levelX: right, levelA: 'right', levelY: hudY, ty: hudY + 60 + Math.max(0, (boardY - hudY - 150) / 2), rad: Math.min(46, (boardY - hudY) * 0.3), maxW: W - 24 };
+    }
   }
   addEventListener('resize', resize);
   const cellCenter = (c, r) => ({ x: boardX + c * cell + cell / 2, y: boardY + r * cell + cell / 2 });
@@ -667,18 +676,19 @@
     ctx.restore();
   }
   const easeOut = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+  function fitText(t, x, y, maxW) { const w = ctx.measureText(t).width; if (w <= maxW) { ctx.fillText(t, x, y); return; } ctx.save(); ctx.translate(x, y); ctx.scale(maxW / w, maxW / w); ctx.fillText(t, 0, 0); ctx.restore(); }
   function drawHUD(time) {
-    const cx = W / 2, top = hudY;
+    const cx = hud.cx, top = hud.scoreY;
     const sum = pathSum();
-    // score (left) + level (right)
+    // score + level
     ctx.textBaseline = 'middle';
-    const left = Math.max(12, boardX) + 56, right = Math.min(W - 12, boardX + boardW);
-    ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '800 12px system-ui, sans-serif'; ctx.fillText('SCORE', left, top + 14);
+    const left = hud.scoreX, right = hud.levelX;
+    ctx.textAlign = hud.scoreA; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '800 12px system-ui, sans-serif'; ctx.fillText('SCORE', left, top + 14);
     ctx.save(); ctx.translate(left, top + 36); ctx.scale(1 + scorePop * 0.18, 1 + scorePop * 0.18); ctx.fillStyle = scorePop > 0.3 ? '#ffd23f' : '#fff'; ctx.font = '900 24px ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif'; ctx.fillText(Math.round(shownScore).toLocaleString('en-US'), 0, 0); ctx.restore();
-    ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '800 12px system-ui, sans-serif'; ctx.fillText(mode === 'zen' ? 'ZEN' : 'LEVEL', right, top + 14);
-    ctx.fillStyle = '#ffd23f'; ctx.font = '900 24px ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif'; ctx.fillText(mode === 'zen' ? '∞' : String(level), right, top + 36);
+    ctx.textAlign = hud.levelA; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '800 12px system-ui, sans-serif'; ctx.fillText(mode === 'zen' ? 'ZEN' : 'LEVEL', right, hud.levelY + 14);
+    ctx.fillStyle = '#ffd23f'; ctx.font = '900 24px ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif'; ctx.fillText(mode === 'zen' ? '∞' : String(level), right, hud.levelY + 36);
     // target bubble
-    const ty = top + 60 + Math.max(0, (boardY - top - 150) / 2), rad = Math.min(46, (boardY - top) * 0.3);
+    const ty = hud.ty, rad = hud.rad;
     const state2 = path.length ? (sum === target && path.length >= 2 ? 'ok' : sum > target ? 'over' : 'run') : 'idle';
     const ringCol = state2 === 'ok' ? '#3ddc84' : state2 === 'over' ? '#ff5a6e' : '#ffd23f';
     const sc = 1 + 0.25 * targetPop;
@@ -696,13 +706,13 @@
     // running sum under the target
     if (path.length) {
       ctx.font = '900 20px ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif'; ctx.fillStyle = ringCol;
-      ctx.fillText(String(sum) + (state2 === 'over' ? '  too much' : state2 === 'ok' ? (want && path.length === want ? '  ★ BONUS' : '  ✓ let go') : '') + (want && state2 !== 'over' ? '   ' + path.length + '/' + want + ' tiles' : ''), cx, ty + rad + 18);
+      fitText(String(sum) + (state2 === 'over' ? '  too much' : state2 === 'ok' ? (want && path.length === want ? '  ★ BONUS' : '  ✓ let go') : '') + (want && state2 !== 'over' ? '   ' + path.length + '/' + want + ' tiles' : ''), cx, ty + rad + 18, hud.maxW);
     } else if (armed === 'ham') {
-      ctx.font = '900 16px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#ffd23f'; ctx.fillText('Tap a tile to smash it', cx, ty + rad + 18);
+      ctx.font = '900 16px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#ffd23f'; fitText('Tap a tile to smash it', cx, ty + rad + 18, hud.maxW);
     } else if (want) {
-      ctx.font = '900 15px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#4df3ff'; ctx.fillText('★ BONUS: use exactly ' + want + ' tiles', cx, ty + rad + 18);
+      ctx.font = '900 15px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#4df3ff'; fitText('★ BONUS: use exactly ' + want + ' tiles', cx, ty + rad + 18, hud.maxW);
     } else if (combo >= 2 && comboT > 0) {
-      ctx.font = '900 16px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#ffa03d'; ctx.fillText('COMBO x' + (1 + (combo - 1) * 0.5), cx, ty + rad + 18);
+      ctx.font = '900 16px ui-rounded, system-ui, sans-serif'; ctx.fillStyle = '#ffa03d'; fitText('COMBO x' + (1 + (combo - 1) * 0.5), cx, ty + rad + 18, hud.maxW);
     }
     // time bar
     if (mode === 'rush') {
@@ -801,7 +811,8 @@
     // first-game banner
     if (!save.tut) {
       ctx.font = '800 15px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.9)';
-      ctx.fillText('Drag across touching tiles to make ' + target, W / 2, boardY + boardH + 22);
+      if (land) { ctx.textAlign = 'center'; fitText('Drag across touching tiles', hud.cx, hud.ty + hud.rad + 46, hud.maxW); fitText('to make ' + target, hud.cx, hud.ty + hud.rad + 66, hud.maxW); }
+      else ctx.fillText('Drag across touching tiles to make ' + target, W / 2, boardY + boardH + 22);
     }
   }
   // menu: a small demo board drifting behind the title
@@ -835,7 +846,8 @@
     if (prev && prev.c === p.c && prev.r === p.r) { path.pop(); sTick(); return; } // slide back = undo
     if (path.some(q => q.c === p.c && q.r === p.r)) return;
     if (lastP && (Math.abs(lastP.c - p.c) > 1 || Math.abs(lastP.r - p.r) > 1)) return;
-    const t = at(p.c, p.r); if (!t || t.off < -0.35) return;
+    const t = at(p.c, p.r); if (!t) return;
+    if (t.off < 0) { t.off = 0; t.vel = 0; } // a falling tile snaps into place when grabbed, so fast players never lose a move
     path.push(p); sNote(path.length - 1); buzz(8);
   }
   function localXY(e) { return { x: e.clientX, y: e.clientY }; }
@@ -1006,7 +1018,7 @@
     Plat.msg('game_ready');
   }
   // test hook for the automated checks (web preview only)
-  if (!yt && !window.bridge && /[?&]sptest\b/.test(location.search)) window.__sp = { get state() { return state; }, get target() { return target; }, get score() { return score; }, get level() { return level; }, findPath: () => findPath(target), cellCenter, setTime: v => { timeLeft = v; }, get time() { return timeLeft; }, achievable, get want() { return want; }, get ham() { return save.ham; }, get shf() { return save.shf; }, get missions() { return missions.map(q => q.done); }, cellAtTile: (c, r) => at(c, r) && at(c, r).v };
+  if (!yt && !window.bridge && /[?&]sptest\b/.test(location.search)) window.__sp = { get state() { return state; }, get target() { return target; }, get score() { return score; }, get level() { return level; }, findPath: () => findPath(target), cellCenter, setTime: v => { timeLeft = v; }, get time() { return timeLeft; }, get want() { return want; }, get ham() { return save.ham; }, get shf() { return save.shf; }, get missions() { return missions.map(q => q.done); }, cellAtTile: (c, r) => at(c, r) && at(c, r).v, board: () => cells.map(t => t ? [t.v, +t.off.toFixed(2)] : null), get timeMax() { return timeMax; }, get combo() { return combo; }, sim: { start: m => { newGame(m); }, drag: cs => { dragging = true; path = []; cs.forEach(q => tryAdd(q)); release(); }, tick: d => { while (d > 0) { const h = Math.min(0.05, d); update(h); d -= h; } }, draw: () => render(performance.now() / 1000, 0.016), ham: q => { if (save.ham && state === 'play') { armed = 'ham'; smash(q); } }, shf: () => shuffleBoard(), quit: () => endGame(), menu: () => showMenu(), get save() { return save; }, get missions() { return missions.map(q => ({ v: q.m.val(), n: q.n, d: q.done })); } }, pick: () => { const a = performance.now(); pickTarget(); return performance.now() - a; }, keep: () => { const a = performance.now(); keepOrPick(); return performance.now() - a; } };
   resize(); setMuted(false);
   requestAnimationFrame(frame);
 })();
