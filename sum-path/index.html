@@ -305,6 +305,63 @@
     const m = music; music = null;
     try { m.g.gain.cancelScheduledValues(ac.currentTime); m.g.gain.setValueAtTime(m.g.gain.value, ac.currentTime); m.g.gain.linearRampToValueAtTime(0, ac.currentTime + 0.6); m.src.stop(ac.currentTime + 0.65); } catch (e) {}
   }
+  /*SITE_MUSIC_START*/
+  // kiavafa.github.io build only (build.sh strips this block from the YouTube, Playgama and one-file builds).
+  // Background music here is Kia Vafa's own piano pieces, streamed one at a time as a shuffled playlist
+  // instead of 3:33. Each piece gets its own level loudness-matched to each other, then 6 dB below where 3:33 sat (Kia 11-02: lower; v = match to -18.4 LUFS x 0.5, music bus stays 0.3).
+  const PIANO = [
+    { f: 'music/piano-1', v: 0.298 }, // -13.9 LUFS
+    { f: 'music/piano-2', v: 0.500 }, // -18.4 LUFS
+    { f: 'music/piano-3', v: 0.431 }, // -17.1 LUFS
+    { f: 'music/piano-4', v: 0.407 }  // -16.6 LUFS
+  ];
+  const PIANO_EXT = (() => { try { return new Audio().canPlayType('audio/webm; codecs="opus"') ? '.webm' : '.mp3'; } catch (e) { return '.mp3'; } })();
+  let pianoEl = null, pianoGain = null, pianoIdx = -1, pianoOrder = [], pianoErr = 0;
+  function nextPiano() {
+    if (!pianoOrder.length) {
+      pianoOrder = PIANO.map((_, i) => i);
+      for (let i = pianoOrder.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pianoOrder[i], pianoOrder[j]] = [pianoOrder[j], pianoOrder[i]]; }
+      if (pianoOrder.length > 1 && pianoOrder[0] === pianoIdx) pianoOrder.push(pianoOrder.shift());
+    }
+    return (pianoIdx = pianoOrder.shift());
+  }
+  function playPiano(i) {
+    const t = ac.currentTime, g = pianoGain.gain;
+    g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(PIANO[i].v, t + 2);
+    pianoEl.src = PIANO[i].f + PIANO_EXT;
+    pianoEl.play().catch(() => {});
+  }
+  initAudio = function () {
+    if (ac) { if (ac.state === 'suspended' && !paused) ac.resume(); return; }
+    try {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain(); master.connect(ac.destination);
+      musicBus = ac.createGain(); sfxBus = ac.createGain(); musicBus.connect(master); sfxBus.connect(master);
+      applyMix();
+      pianoEl = new Audio(); pianoEl.preload = 'none';
+      pianoGain = ac.createGain(); pianoGain.gain.value = 0;
+      ac.createMediaElementSource(pianoEl).connect(pianoGain); pianoGain.connect(musicBus);
+      pianoEl.addEventListener('playing', () => { pianoErr = 0; });
+      pianoEl.addEventListener('ended', () => { if (music) playPiano(nextPiano()); });
+      pianoEl.addEventListener('error', () => { if (music && pianoEl.getAttribute('src') && ++pianoErr < PIANO.length) setTimeout(() => { if (music) playPiano(nextPiano()); }, 1000); });
+      // pause/resume (menu, hidden tab, ads) suspends the AudioContext; keep the stream in step with it
+      ac.addEventListener('statechange', () => { if (!music) return; if (ac.state === 'running') pianoEl.play().catch(() => {}); else pianoEl.pause(); });
+      if (state === 'play') startMusic();
+    } catch (e) { ac = null; }
+  };
+  startMusic = function () {
+    if (!ac || !pianoEl || music) return;
+    music = { piano: true };
+    playPiano(nextPiano());
+  };
+  stopMusic = function () {
+    if (!music || !ac || !pianoEl) { music = null; return; }
+    music = null;
+    const t = ac.currentTime, g = pianoGain.gain;
+    g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + 0.6);
+    setTimeout(() => { if (!music) pianoEl.pause(); }, 700);
+  };
+  /*SITE_MUSIC_END*/
   function tone(hz, dur, vol, type, when) {
     if (!ac || muted || !save.sfx) return;
     const t = ac.currentTime + (when || 0);
