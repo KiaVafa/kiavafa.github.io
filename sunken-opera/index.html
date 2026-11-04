@@ -285,7 +285,7 @@ const EEL_COUNT = 7;   // giant eels roam the board freely; a bite drags her dow
    - near the top (tile 75+) the eels may attack once or twice per climb, never every landing
    - about 1 bite per climb on average, roughly half of the climbs reach the surface */
 const AIR_MAX = 19;
-const HUNT = [0,.015,.03,.045,.06];
+const HUNT = [0,0,.01,.02,.03];
 const TOP_FROM = 75, TOP_CHANCE = .3;
 const REGIONS = [
   { from:1,  name:'The Orchestra Pit', bg:'pit',   tint:[24,88,96] },
@@ -547,8 +547,8 @@ function updateEels(dt){
       if(h.x<m) px=1; else if(h.x>10-m) px=-1;
       if(h.y<m) py=1; else if(h.y>10-m) py=-1;
       if(px||py){ const want=Math.atan2(py||((cy-h.y)*.3),px||((cx-h.x)*.3)); let d=want-e.a; d=Math.atan2(Math.sin(d),Math.cos(d)); turn+=d*2.2; }
-      // free eels swim around the jellyfish: only an eel that hunts her ever touches her
-      { const ex=tok.x/T-h.x, ey=tok.y/T-h.y, d=Math.hypot(ex,ey), R=1.5;
+      // an eel that may not bite right now (cooling down) swims around her instead of over her
+      if(!canContact(e)){ const ex=tok.x/T-h.x, ey=tok.y/T-h.y, d=Math.hypot(ex,ey), R=1.5;
         if(d<R){ const to=Math.atan2(ey,ex); let rel=to-e.a; rel=Math.atan2(Math.sin(rel),Math.cos(rel));
           if(Math.abs(rel)<Math.PI*.6){ turn += -(rel>=0?1:-1)*(R-d)/R*9; } } }
       e.a += turn*dt;
@@ -558,10 +558,31 @@ function updateEels(dt){
     for(let k=1;k<EEL_N;k++){ const p=e.pts[k], q=e.pts[k-1], dx=p.x-q.x, dy=p.y-q.y, d=Math.hypot(dx,dy)||1;
       if(d>e.gap){ p.x=q.x+dx/d*e.gap; p.y=q.y+dy/d*e.gap; } }
     if(!e.ctrl){ const tx=tok.x/T, ty=tok.y/T, RB=.62; // the body bends around her too
-      for(let k=0;k<EEL_N;k++){ const p=e.pts[k], dx=p.x-tx, dy=p.y-ty, d=Math.hypot(dx,dy);
+      for(let k=canContact(e)?4:0;k<EEL_N;k++){ const p=e.pts[k], dx=p.x-tx, dy=p.y-ty, d=Math.hypot(dx,dy);
         if(d<RB){ const u=d>1e-4?1/d:0, ux=u?dx*u:Math.cos(e.a+1.57), uy=u?dy*u:Math.sin(e.a+1.57), pushk=Math.min(1,dt*8);
           p.x+=ux*(RB-d)*pushk; p.y+=uy*(RB-d)*pushk; } } }
   }
+}
+/* an eel whose head touches her bites her */
+let contactCool = 0, pendingBite = null;
+const CONTACT_R = .42, CONTACT_COOL = 3;
+const overlayOpen = () => ['titleScreen','winScreen','loseScreen','wardScreen'].some(id=>$(id).classList.contains('show'));
+function canContact(e){ return S.started && !S.over && !e.ctrl && e.cool<=0 && contactCool<=0 && !overlayOpen(); }
+function checkContact(dt){
+  contactCool=Math.max(0,contactCool-dt);
+  if(pendingBite) return;
+  const tx=tok.x/T, ty=tok.y/T;
+  for(const e of eels){ if(!canContact(e)) continue; const h=e.pts[0];
+    if(Math.hypot(h.x-tx,h.y-ty)<CONTACT_R){
+      if(S.busy){ pendingBite=e; e.ctrl=true; } // she is moving: it strikes when she stops
+      else contactBite(e);
+      return; } }
+}
+async function contactBite(e){
+  setBusy(true); e.ctrl=true; contactCool=99;
+  await eelBite(e);
+  contactCool=CONTACT_COOL; checkRegion(false); collect(S.pos); save(); hud(); status(flavor());
+  setBusy(false);
 }
 function eelPoint(e,u){
   const f=clamp(u,0,1)*(EEL_N-1), i=Math.min(EEL_N-2,Math.floor(f)), k=f-i, a=e.pts[i], b=e.pts[i+1];
@@ -1056,7 +1077,7 @@ function frame(now){
   ctx.drawImage(staticCv,0,0,BW,BW);
   drawColumnsLive(dt);
   drawPearls();
-  updateEels(dt);
+  updateEels(dt); checkContact(dt);
   for(const e of eels) drawEel(e);
   for(const f of fx) if(f.under) f.draw(f);
   drawToken();
@@ -1109,7 +1130,7 @@ function hud(){
   $('itShield').classList.toggle('on',S.shield);
   $('itStun').classList.toggle('on',S.stun);
 }
-function setBusy(b){ S.busy=b; $('rollBtn').disabled=b; $('rollBtn').classList.toggle('ready',!b); }
+function setBusy(b){ if(!b && pendingBite){ pendingBite.ctrl=false; pendingBite=null; } S.busy=b; $('rollBtn').disabled=b; $('rollBtn').classList.toggle('ready',!b); }
 let curRegion=-1;
 function checkRegion(silent){
   const r=regionOf(S.pos); if(r===curRegion) return; const up = r>curRegion; curRegion=r;
@@ -1159,6 +1180,7 @@ async function rideColumn(c){
 }
 
 /* ---------------- ride: eel ---------------- */
+function takePending(){ const e=pendingBite; pendingBite=null; return e; }
 async function eelBite(e){
   // the eel turns and swims for her on a curve, the body flowing behind
   e.ctrl=true; say('An eel has seen her...');
@@ -1199,7 +1221,7 @@ async function resolveLanding(allowEvent){
     checkRegion(false); collect(S.pos);
     if(S.pos>=100){ S.pos=100; return win(); }
     if(COLUMNS[S.pos]){ await rideColumn(columns.find(c=>c.a===S.pos)); continue; }
-    const eel=!bitten&&hunter(S.pos); if(eel){ bitten=true; await eelBite(eel); continue; }
+    const eel=!bitten&&(takePending()||hunter(S.pos)); if(eel){ bitten=true; contactCool=99; await eelBite(eel); contactCool=CONTACT_COOL; continue; }
     if(allowEvent && EVENTS[S.pos]){ allowEvent=false; const r=await runEvent(EVENTS[S.pos]); if(r==='again') return 'again'; continue; }
     break;
   }
@@ -1418,6 +1440,7 @@ async function startGame(resume){
   $('app').setAttribute('aria-hidden','false');
   setTimeout(()=>{ $('titleVid').pause(); $('winVid').pause(); },900);
   S.started=true; HOST.start();
+  pendingBite=null; contactCool=2.5; eels.forEach(e=>{ e.ctrl=false; e.lunge=0; });
   if(!resume){
     resetGame(); setMusicVol(.32);
     toast('THE ORCHESTRA PIT','Region 1 of 5',2200);
