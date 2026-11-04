@@ -346,11 +346,17 @@ const S = { pos:1, rolls:0, air:AIR_MAX, free:false, topQ:3, shield:false, stun:
   bank:0, owned:['crimson','none'], wear:{trail:'crimson',buddy:'none',crown:'none'} };
 let PEARLS = {};   // tile -> 1 (pearl) or 3 (golden pearl), regenerated every climb
 const SAVE_KEY = 'sunkenOpera.v2';
-function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify({pos:S.pos,rolls:S.rolls,air:S.air,free:S.free,topQ:S.topQ,shield:S.shield,stun:S.stun,
+/* platform hooks: no-ops here; a portal build sets window.HOST_ADAPTER to talk to its SDK */
+const HOST = Object.assign({ mute:false, init:()=>Promise.resolve(), ready(){}, start(){}, stop(){}, brk(){},
+  loadRaw(){ try{ return localStorage.getItem(SAVE_KEY); }catch(e){ return null; } },
+  save(str){ try{ localStorage.setItem(SAVE_KEY,str); }catch(e){} } }, window.HOST_ADAPTER||{});
+const silent = () => S.muted || HOST.mute;
+function hostAudio(){ updateMute(); if(silent()) AU.music.pause(); else if(S.started && !document.hidden) AU.music.play().catch(()=>{}); }
+function save(){ try{ HOST.save(JSON.stringify({pos:S.pos,rolls:S.rolls,air:S.air,free:S.free,topQ:S.topQ,shield:S.shield,stun:S.stun,
   pearls:S.pearls,got:S.got,spent:S.spent,map:PEARLS,best:S.best,muted:S.muted,over:S.over,bank:S.bank,owned:S.owned,wear:S.wear})); }catch(e){} }
 function load(){
   try{
-    const d = JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(!d) return null;
+    const d = JSON.parse(HOST.loadRaw()||'null'); if(!d || typeof d!=='object') return null;
     const n = v => Number.isFinite(v) ? v : 0, int=(v,a,b)=>clamp(Math.floor(n(v)),a,b);
     S.best = int(d.best,0,9999); S.muted = !!d.muted; S.bank = int(d.bank,0,99999);
     const ids = new Set([].concat(...Object.values(WARD).map(g=>g.map(i=>i.id))));
@@ -410,14 +416,14 @@ function audioInit(){
   if(AU.ctx) return;
   try{
     AU.ctx = new (window.AudioContext||window.webkitAudioContext)();
-    AU.master = AU.ctx.createGain(); AU.master.gain.value = S.muted?0:0.55; AU.master.connect(AU.ctx.destination);
+    AU.master = AU.ctx.createGain(); AU.master.gain.value = silent()?0:0.55; AU.master.connect(AU.ctx.destination);
     const len = AU.ctx.sampleRate*1.2, buf = AU.ctx.createBuffer(1,len,AU.ctx.sampleRate), d = buf.getChannelData(0);
     for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
     AU.noise = buf;
   }catch(e){ AU.ctx=null; }
 }
 function tone(f, dur, {type='sine',vol=.2,at=0,slide=null,attack=.006,q=null}={}){
-  if(!AU.ctx||S.muted) return;
+  if(!AU.ctx||silent()) return;
   const c=AU.ctx, t=c.currentTime+at, o=c.createOscillator(), g=c.createGain();
   o.type=type; o.frequency.setValueAtTime(f,t); if(slide) o.frequency.exponentialRampToValueAtTime(slide,t+dur);
   g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+attack); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -426,7 +432,7 @@ function tone(f, dur, {type='sine',vol=.2,at=0,slide=null,attack=.006,q=null}={}
   node.connect(g); g.connect(AU.master); o.start(t); o.stop(t+dur+.05);
 }
 function noise(dur,{vol=.2,at=0,f=1200,f2=null,q=1,type='bandpass'}={}){
-  if(!AU.ctx||S.muted) return;
+  if(!AU.ctx||silent()) return;
   const c=AU.ctx, t=c.currentTime+at, s=c.createBufferSource(), fl=c.createBiquadFilter(), g=c.createGain();
   s.buffer=AU.noise; fl.type=type; fl.Q.value=q; fl.frequency.setValueAtTime(f,t); if(f2) fl.frequency.exponentialRampToValueAtTime(f2,t+dur);
   g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.01); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
@@ -453,13 +459,13 @@ const SFX = {   // sound hooks: swap any of these for recorded files later
 };
 function setMusicVol(v,ms=1200){
   const m=AU.music; if(!m) return; const from=m.volume, t0=performance.now();
-  const step=()=>{ const k=clamp((performance.now()-t0)/ms,0,1); m.volume=clamp(lerp(from,S.muted?0:v,k),0,1); if(k<1) requestAnimationFrame(step); };
+  const step=()=>{ const k=clamp((performance.now()-t0)/ms,0,1); m.volume=clamp(lerp(from,silent()?0:v,k),0,1); if(k<1) requestAnimationFrame(step); };
   step();
 }
 function updateMute(){
   $('waves').style.display = S.muted?'none':'';
-  if(AU.master) AU.master.gain.value = S.muted?0:0.55;
-  AU.music.muted = S.muted;
+  if(AU.master) AU.master.gain.value = silent()?0:0.55;
+  AU.music.muted = silent();
 }
 
 /* ---------------- canvas setup ---------------- */
@@ -1359,7 +1365,7 @@ async function win(){
   line('PEARLS SAVED','+'+gain);
   line('IN THE WARDROBE: '+S.bank+' PEARLS');
   const wv=$('winVid'); setSources(wv,'surface'); wv.play().catch(()=>{});
-  $('winScreen').classList.add('show'); setMusicVol(.6);
+  $('winScreen').classList.add('show'); setMusicVol(.6); HOST.stop(); HOST.brk();
 }
 
 /* ---------------- out of air ---------------- */
@@ -1375,7 +1381,7 @@ async function lose(){
   $('loseSub').textContent = S.pos>=75 ? 'So close. One more breath and she would have made it.' : 'The current was too strong tonight. Try again.';
   line('SHE REACHED TILE',S.pos); line('PEARLS SAVED','+'+gain); line('IN THE WARDROBE: '+S.bank+' PEARLS');
   const lv=$('loseVid'); setSources(lv,'ruins'); lv.play().catch(()=>{});
-  $('loseScreen').classList.add('show'); setMusicVol(.45);
+  $('loseScreen').classList.add('show'); setMusicVol(.45); HOST.stop(); HOST.brk();
 }
 
 /* ---------------- start / menus ---------------- */
@@ -1387,11 +1393,11 @@ function resetGame(){
 }
 async function startGame(resume){
   audioInit(); if(AU.ctx&&AU.ctx.state==='suspended') AU.ctx.resume();
-  AU.music.volume=S.muted?0:.5; AU.music.play().catch(()=>{});
+  AU.music.volume=silent()?0:.5; if(!silent()) AU.music.play().catch(()=>{});
   ['titleScreen','winScreen','loseScreen','wardScreen'].forEach(id=>$(id).classList.remove('show')); tok.alpha=1;
   $('app').setAttribute('aria-hidden','false');
   setTimeout(()=>{ $('titleVid').pause(); $('winVid').pause(); },900);
-  S.started=true;
+  S.started=true; HOST.start();
   if(!resume){
     resetGame(); setMusicVol(.32);
     toast('THE ORCHESTRA PIT','Region 1 of 5',2200);
@@ -1445,7 +1451,7 @@ function openWard(from){
 function closeWard(){ $('wardScreen').classList.remove('show'); $('wardVid').pause(); $(wardFrom).classList.add('show'); }
 
 function openTitle(){
-  $('titleScreen').classList.add('show'); const tv=$('titleVid'); tv.play().catch(()=>{});
+  HOST.stop(); $('titleScreen').classList.add('show'); const tv=$('titleVid'); tv.play().catch(()=>{});
   $('resumeBtn').style.display = (S.started && !S.over && S.pos>1) ? '' : 'none';
   setMusicVol(.5);
 }
@@ -1466,7 +1472,7 @@ function boot(){
   $('resumeBtn').onclick=()=>startGame(true);
   $('againBtn').onclick=()=>startGame(false);
   $('rollBtn').onclick=()=>roll(); $('diceBtn').onclick=()=>roll();
-  $('muteBtn').onclick=()=>{ S.muted=!S.muted; updateMute(); save(); if(!S.muted){ audioInit(); AU.music.play().catch(()=>{}); setMusicVol(.32,300);} };
+  $('muteBtn').onclick=()=>{ S.muted=!S.muted; updateMute(); save(); if(!silent()){ audioInit(); AU.music.play().catch(()=>{}); setMusicVol(.32,300);} };
   $('menuBtn').onclick=()=>{ if(!S.busy) openTitle(); };
   addEventListener('keydown',e=>{
     const onScreen=['titleScreen','winScreen','loseScreen','wardScreen'].some(id=>$(id).classList.contains('show'));
@@ -1474,11 +1480,11 @@ function boot(){
     if(e.key===' '||e.key==='Enter'){ e.preventDefault(); roll(); }
   });
   let rz=0; addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(layout,120); });
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ AU.music.pause(); vids.forEach(v=>v.pause()); } else { if(S.started) AU.music.play().catch(()=>{}); vids[vidIdx].play().catch(()=>{}); } });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ AU.music.pause(); vids.forEach(v=>v.pause()); } else { if(S.started && !silent()) AU.music.play().catch(()=>{}); vids[vidIdx].play().catch(()=>{}); } });
   if(document.fonts) document.fonts.ready.then(()=>{ staticDirty=true; });
   requestAnimationFrame(frame);
 }
-boot();
+HOST.init().catch(()=>{}).then(()=>{ boot(); HOST.ready(); });
 </script>
 </body>
 </html>
