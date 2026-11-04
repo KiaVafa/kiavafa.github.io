@@ -176,7 +176,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   #items{flex:0;justify-content:center;flex-wrap:wrap}
   #diceRow{flex-direction:column;gap:14px}
 }
-@media (max-width:560px){.brand{display:none} #region{text-align:left;font-size:11px;letter-spacing:.1em}}
+@media (max-width:560px){#app{padding-left:max(3px,env(safe-area-inset-left));padding-right:max(3px,env(safe-area-inset-right))} #boardWrap,#board{border-radius:12px} .brand{display:none} #region{text-align:left;font-size:11px;letter-spacing:.1em}}
 
 </style>
 </head>
@@ -474,12 +474,11 @@ let DPR = 1, BW = 600, T = 60, VW = 600, VH = 600, ZOOM = 1, cam = {x:0,y:0,snap
 function layout(){
   const vw = innerWidth, vh = innerHeight, land = vw/vh >= 1.2;
   const hud = $('hud').offsetHeight, ctrl = land ? 0 : $('ctrl').offsetHeight;
-  const availW = land ? vw-250-28 : vw-16, availH = vh-hud-ctrl-(land?24:20);
-  // phones in portrait: draw the board bigger than the screen and let a camera follow the jellyfish
-  ZOOM = (!land && vw < 700) ? 1.6 : 1;
-  if(ZOOM>1){ BW = Math.floor(availW*ZOOM); VW = Math.floor(availW); VH = Math.floor(Math.min(availH, BW)); }
-  else { BW = Math.floor(clamp(Math.min(availW,availH),240,900)); VW = VH = BW; }
-  const bwr=$('boardWrap'); bwr.style.width=VW+'px'; bwr.style.height=VH+'px'; bwr.style.overflow = ZOOM>1 ? 'hidden' : '';
+  const padX = (()=>{ const cs=getComputedStyle($('app')); return parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight); })();
+  const availW = land ? vw-250-28 : vw-padX, availH = vh-hud-ctrl-(land?24:12);
+  // the whole board is always on screen (Kia: no follow camera)
+  ZOOM = 1; BW = Math.floor(clamp(Math.min(availW,availH),240,900)); VW = VH = BW;
+  const bwr=$('boardWrap'); bwr.style.width=VW+'px'; bwr.style.height=VH+'px'; bwr.style.overflow='';
   cam.snap = true;
   T = BW/10; DPR = Math.min(window.devicePixelRatio||1, 2);
   cv.width = Math.round(BW*DPR); cv.height = Math.round(BW*DPR);
@@ -548,12 +547,20 @@ function updateEels(dt){
       if(h.x<m) px=1; else if(h.x>10-m) px=-1;
       if(h.y<m) py=1; else if(h.y>10-m) py=-1;
       if(px||py){ const want=Math.atan2(py||((cy-h.y)*.3),px||((cx-h.x)*.3)); let d=want-e.a; d=Math.atan2(Math.sin(d),Math.cos(d)); turn+=d*2.2; }
+      // free eels swim around the jellyfish: only an eel that hunts her ever touches her
+      { const ex=tok.x/T-h.x, ey=tok.y/T-h.y, d=Math.hypot(ex,ey), R=1.5;
+        if(d<R){ const to=Math.atan2(ey,ex); let rel=to-e.a; rel=Math.atan2(Math.sin(rel),Math.cos(rel));
+          if(Math.abs(rel)<Math.PI*.6){ turn += -(rel>=0?1:-1)*(R-d)/R*9; } } }
       e.a += turn*dt;
       const sp=e.sp*(1+.25*Math.sin(time*.5+e.phase));
       h.x=clamp(h.x+Math.cos(e.a)*sp*dt,.25,9.75); h.y=clamp(h.y+Math.sin(e.a)*sp*dt,.25,9.75);
     }
     for(let k=1;k<EEL_N;k++){ const p=e.pts[k], q=e.pts[k-1], dx=p.x-q.x, dy=p.y-q.y, d=Math.hypot(dx,dy)||1;
       if(d>e.gap){ p.x=q.x+dx/d*e.gap; p.y=q.y+dy/d*e.gap; } }
+    if(!e.ctrl){ const tx=tok.x/T, ty=tok.y/T, RB=.62; // the body bends around her too
+      for(let k=0;k<EEL_N;k++){ const p=e.pts[k], dx=p.x-tx, dy=p.y-ty, d=Math.hypot(dx,dy);
+        if(d<RB){ const u=d>1e-4?1/d:0, ux=u?dx*u:Math.cos(e.a+1.57), uy=u?dy*u:Math.sin(e.a+1.57), pushk=Math.min(1,dt*8);
+          p.x+=ux*(RB-d)*pushk; p.y+=uy*(RB-d)*pushk; } } }
   }
 }
 function eelPoint(e,u){
@@ -694,8 +701,8 @@ function renderStatic(){
     // top glass highlight
     c2.save(); c2.clip(); const hl=c2.createLinearGradient(x,y,x,y+T*.5); hl.addColorStop(0,'rgba(255,255,255,.10)'); hl.addColorStop(1,'rgba(255,255,255,0)');
     c2.fillStyle=hl; c2.fillRect(x,y,T,T*.5); c2.restore();
-    c2.font=`600 ${Math.max(8,T*.17)}px Cinzel, Georgia, serif`; c2.textAlign='left'; c2.textBaseline='top';
-    c2.fillStyle='rgba(255,236,200,.62)'; c2.fillText(n,x+T*.12,y+T*.1);
+    c2.font=`600 ${Math.max(10,T*(T<50?.24:.17))}px Cinzel, Georgia, serif`; c2.textAlign='left'; c2.textBaseline='top';
+    c2.fillStyle=T<50?'rgba(255,240,210,.82)':'rgba(255,236,200,.62)'; c2.fillText(n,x+T*(T<50?.07:.12),y+T*(T<50?.05:.1));
   }
   // region dividers
   c2.strokeStyle='rgba(232,192,122,.32)'; c2.lineWidth=1; c2.setLineDash([T*.08,T*.08]);
