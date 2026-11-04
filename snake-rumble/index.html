@@ -101,6 +101,9 @@
   .up[disabled] { opacity: .45; }
   .play { margin-top: 30px; }
   .hint { margin-top: 18px; font-size: 15px; font-weight: 800; opacity: .9; }
+  .site { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 8px 16px 8px 12px; border-radius: 999px; background: rgba(10,15,42,.55); border: 1.5px solid rgba(255,255,255,.35); color: #fff; font-size: 14px; font-weight: 800; letter-spacing: .06em; text-decoration: none; pointer-events: auto; }
+  .site svg { width: 18px; height: 18px; fill: none; stroke: var(--yellow); stroke-width: 1.8; }
+  .site:hover, .site:focus-visible { background: rgba(10,15,42,.8); border-color: var(--yellow); outline: none; }
   .credit { position: absolute; left: 0; right: 0; bottom: max(calc(var(--vb) + 12px), env(safe-area-inset-bottom)); text-align: center; font-size: 12px; letter-spacing: .12em; opacity: .75; }
   .res h2 { font-size: 46px; }
   .rank { font-size: 22px; margin-top: 10px; }
@@ -146,6 +149,7 @@
   <div class="skins" id="skins"></div>
   <button class="btn play" id="playBtn">PLAY</button>
   <div class="hint t">Drag to steer. Eat orbs to grow.<br>Cut in front of snakes so they crash into you.<br>Never hit a body with your head!</div>
+  <a class="site" id="siteLink" href="https://kiavafa.github.io/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.6 3.9 5.8 3.9 9.5s-1.3 6.9-3.9 9.5c-2.6-2.6-3.9-5.8-3.9-9.5S9.4 5.1 12 2.5z"/></svg><span>KiaVafa website</span></a>
   <div class="credit t">GAME &amp; MUSIC BY KIA VAFA · © 2026</div>
 </div>
 

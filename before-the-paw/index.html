@@ -994,7 +994,28 @@ function drawTitle(){
   } else text('Loading…', W / 2, H - 200, 40, '#ffd27a');
   text('Music & Game by Kia Vafa', W / 2, H - 46, 22, '#d9a46b', 'center', '600');
   hud_mute_only();
+  siteButton();
 }
+// title-screen link to Kia's website (opened from 'click' so mobile browsers allow the new tab)
+const SITE_URL = 'https://kiavafa.github.io/';
+function siteButton(){
+  const x = 28, y = 26, w = 292, h = 64;
+  BTN.site = { x, y:y - OY, w, h };
+  ctx.save(); ctx.translate(0, -OY);
+  ctx.fillStyle = 'rgba(58,42,44,.9)'; roundRect(x, y, w, h, h / 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(246,230,200,.4)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.strokeStyle = '#d9a46b'; ctx.lineWidth = 2.6;
+  const gx = x + 36, gy = y + h / 2, r = 15;
+  ctx.beginPath(); ctx.arc(gx, gy, r, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gx - r, gy); ctx.lineTo(gx + r, gy); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(gx, gy, r * 0.42, r, 0, 0, Math.PI * 2); ctx.stroke();
+  text('KiaVafa website', x + 62, gy + 1, 25, '#f6e6c8', 'left', '700');
+  ctx.restore();
+}
+cv.addEventListener('click', e => {
+  if (phase !== 'title' || adRunning || !inBtn(BTN.site, toLocal(e))) return;
+  tick(); window.open(SITE_URL, '_blank', 'noopener');
+});
 function drawCats(dt){
   ctx.fillStyle = '#1c1418'; ctx.fillRect(0, -OY, W, H + OY);
   const g = ctx.createRadialGradient(W / 2, 300, 50, W / 2, 500, 800);

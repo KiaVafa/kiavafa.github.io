@@ -51,6 +51,9 @@
   .stats { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .pill { background: rgba(10,15,48,.7); border: 1px solid rgba(255,255,255,.16); border-radius: 16px; padding: 7px 14px; font-size: 16px; font-weight: 800; }
   .pill b { color: var(--gold); }
+  .site { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; padding: 8px 16px 8px 12px; border-radius: 999px; background: rgba(10,15,48,.55); border: 1.5px solid rgba(255,255,255,.35); color: #fff; font-size: 14px; font-weight: 800; letter-spacing: .03em; text-decoration: none; pointer-events: auto; -webkit-text-stroke: 0; text-shadow: none; }
+  .site svg { width: 18px; height: 18px; fill: none; stroke: var(--gold); stroke-width: 1.8; }
+  .site:hover, .site:focus-visible { background: rgba(10,15,48,.8); border-color: var(--gold); outline: none; }
   .credit { position: fixed; bottom: max(10px, env(safe-area-inset-bottom)); left: 0; right: 0; font-size: 12px; opacity: .55; font-weight: 700; text-align: center; pointer-events: none; }
   #gear { position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; }
   #mute { position: fixed; top: max(12px, env(safe-area-inset-top)); left: 12px; }
@@ -110,6 +113,7 @@
   <div class="stats"><div class="pill">BEST <b id="mBest">0</b></div><div class="pill">COINS <b id="mCoins">0</b></div></div>
   <button class="btn" id="playBtn">PLAY</button>
   <div class="row"><button class="btn blue small" id="zenBtn">ZEN MODE</button><button class="btn pink small" id="themeBtn">THEMES</button></div>
+  <a class="site" id="siteLink" href="https://kiavafa.github.io/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.6 3.9 5.8 3.9 9.5s-1.3 6.9-3.9 9.5c-2.6-2.6-3.9-5.8-3.9-9.5S9.4 5.1 12 2.5z"/></svg><span>KiaVafa website</span></a>
   <div class="credit">A game by Kia Vafa · Music by Kia Vafa</div>
 </div>
 <button class="icon" id="gear" aria-label="Settings">⚙</button>
