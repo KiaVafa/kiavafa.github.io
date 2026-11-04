@@ -470,12 +470,17 @@ function updateMute(){
 
 /* ---------------- canvas setup ---------------- */
 const cv = $('board'); let ctx = cv.getContext('2d');
-let DPR = 1, BW = 600, T = 60, staticCv = document.createElement('canvas'), staticDirty = true;
+let DPR = 1, BW = 600, T = 60, VW = 600, VH = 600, ZOOM = 1, cam = {x:0,y:0,snap:true}, staticCv = document.createElement('canvas'), staticDirty = true;
 function layout(){
   const vw = innerWidth, vh = innerHeight, land = vw/vh >= 1.2;
   const hud = $('hud').offsetHeight, ctrl = land ? 0 : $('ctrl').offsetHeight;
   const availW = land ? vw-250-28 : vw-16, availH = vh-hud-ctrl-(land?24:20);
-  BW = Math.floor(clamp(Math.min(availW,availH),240,900));
+  // phones in portrait: draw the board bigger than the screen and let a camera follow the jellyfish
+  ZOOM = (!land && vw < 700) ? 1.6 : 1;
+  if(ZOOM>1){ BW = Math.floor(availW*ZOOM); VW = Math.floor(availW); VH = Math.floor(Math.min(availH, BW)); }
+  else { BW = Math.floor(clamp(Math.min(availW,availH),240,900)); VW = VH = BW; }
+  const bwr=$('boardWrap'); bwr.style.width=VW+'px'; bwr.style.height=VH+'px'; bwr.style.overflow = ZOOM>1 ? 'hidden' : '';
+  cam.snap = true;
   T = BW/10; DPR = Math.min(window.devicePixelRatio||1, 2);
   cv.width = Math.round(BW*DPR); cv.height = Math.round(BW*DPR);
   cv.style.width = BW+'px'; cv.style.height = BW+'px';
@@ -1026,10 +1031,18 @@ function drawCaustics(){
 
 /* ---------------- main loop ---------------- */
 let last = performance.now(), cFrame = 0;
+function updateCam(dt){
+  if(ZOOM<=1){ if(cam.x||cam.y||cam.snap){ cam.x=cam.y=0; cam.snap=false; cv.style.transform=''; } return; }
+  const tx=clamp(tok.x-VW/2,0,BW-VW), ty=clamp(tok.y-tok.lift-VH*.55,0,BW-VH);
+  if(cam.snap){ cam.x=tx; cam.y=ty; cam.snap=false; }
+  else { const k=Math.min(1,dt*3.5); cam.x+=(tx-cam.x)*k; cam.y+=(ty-cam.y)*k; }
+  cv.style.transform=`translate3d(${-cam.x.toFixed(1)}px,${-cam.y.toFixed(1)}px,0)`;
+}
 function frame(now){
   const dt = Math.min(.05,(now-last)/1000); last=now; time += dt;
   runTweens(now);
   if(staticDirty) renderStatic();
+  updateCam(dt);
   ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,BW,BW);
   ctx.save();
   if(shake>0){ ctx.translate(rand(-1,1)*shake*T*.12*.4, rand(-1,1)*shake*T*.12*.4); shake=Math.max(0,shake-dt*2.2); } // effects kept soft (40%)
@@ -1102,7 +1115,7 @@ let capTimer=0;
 function caption(img,title,fx,ms=2600){
   const im=img&&IMG[img]; $('capImg').style.backgroundImage = im&&im.ready ? 'url("'+im.src+'")' : '';
   $('capTitle').textContent=title||''; $('capFx').textContent=fx||'';
-  const c=$('caption'); c.classList.toggle('top', tok.y>BW*.5); c.classList.add('show'); clearTimeout(capTimer); capTimer=setTimeout(()=>c.classList.remove('show'),ms);
+  const c=$('caption'); c.classList.toggle('top', (tok.y-cam.y)>VH*.5); c.classList.add('show'); clearTimeout(capTimer); capTimer=setTimeout(()=>c.classList.remove('show'),ms);
 }
 function withCtx(c,fn){ const keep=ctx; ctx=c; try{ fn(); } finally { ctx=keep; } }
 
