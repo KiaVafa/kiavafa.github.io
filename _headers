@@ -1,0 +1,5 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: frame-ancestors 'self'
+  Strict-Transport-Security: max-age=15552000
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
