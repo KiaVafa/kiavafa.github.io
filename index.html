@@ -447,7 +447,7 @@ footer a:hover{opacity:1;color:var(--hot)}
     <div class="hd big" aria-hidden="true"><span class="ln in"><span style="--d:90ms">Picture</span></span></div>
     <p class="hd roles">Ads<i>/</i>Music videos<i>/</i>Short films</p>
     <p class="lead">AI video for brands and artists. I write the idea, build every shot, then cut, grade and score it.</p>
-    <div class="foot"><a class="go" href="#video">Watch the videos</a><button class="playbig" id="heroPlay" aria-label="Play Parking Fight with sound"></button></div>
+    <div class="foot"><a class="go" href="#video">Watch the videos</a><button class="playbig" id="heroPlay" aria-label="Play the fight scene with sound"></button></div>
   </div>
 
   <a class="badge" id="badge" href="#about" aria-label="About Kia Vafa">Kia<br>Vafa</a>
@@ -648,11 +648,11 @@ const TRACKS=[
 ];
 const VID={
  ads:[
-  {id:'brand-versus',t:'Brand Versus',ty:'Concept teaser · 30 seconds',d:'Two brand owners settle it on a basketball court, cut like the intro of a fighting game. Made as a sample for brands that want a series.'},
-  {id:'parking-fight',t:'Parking Fight',ty:'Action short · 14 seconds',d:'A fight in a parking garage, built shot by shot with AI and cut on the hits.'},
-  {id:'gun-shot',t:'Gun Shot',ty:'Action short · 25 seconds',d:'A soldier pinned down in a concrete corridor. The muzzle flashes, falling shells and dust are all generated.'},
-  {id:'turkish-teaser',t:'Turkish Teaser',ty:'Series teaser · 19 seconds · square',sq:1,d:'A teaser in the style of a Turkish crime drama: black coats, stone stairs and a drawn gun.'},
-  {id:'night-crew',t:'Night Crew',ty:'Concept ad · night serum · 18 seconds',d:'A tiny work crew climbs out of the dropper and repairs the skin while she sleeps. The serum brand is made up for the sample.'}
+  {id:'brand-versus',t:'Brand teaser',ty:'Concept · 30 seconds',l:'Two brand owners on a basketball court · 30s',d:'Two brand owners settle it on a basketball court, cut like the intro of a fighting game. Made as a sample for brands that want a series.'},
+  {id:'parking-fight',t:'Action short',ty:'14 seconds',l:'A fight in a parking garage · 14s',d:'A fight in a parking garage, built shot by shot with AI and cut on the hits.'},
+  {id:'gun-shot',t:'Action short',ty:'25 seconds',l:'A firefight in a concrete corridor · 25s',d:'A soldier pinned down in a concrete corridor. The muzzle flashes, falling shells and dust are all generated.'},
+  {id:'turkish-teaser',t:'Series teaser',ty:'19 seconds · square',sq:1,l:'Crime drama, black coats and stone stairs · 19s',d:'A teaser in the style of a crime drama series: black coats, stone stairs and a drawn gun.'},
+  {id:'night-crew',t:'Product ad',ty:'Concept · night serum · 18 seconds',l:'A tiny crew repairs the skin overnight · 18s',d:'A tiny work crew climbs out of the dropper and repairs the skin while she sleeps. The serum brand is made up for the sample.'}
  ],
  mv:[
   {id:'move-on',t:'Move On',ty:'Music video · first minute',d:'The story video for my own song Move On. This is the opening minute with the lyrics on screen.'},
@@ -890,7 +890,7 @@ const stage=(()=>{
     list.innerHTML='';
     VID[tab].forEach((v,i)=>{const li=document.createElement('li');li.style.setProperty('--i',i);
       const b=document.createElement('button');b.innerHTML='<span class="th"><img loading="lazy" alt=""></span><b></b><em></em><span class="eq"><i></i><i></i><i></i></span>';
-      b.querySelector('img').src=img(v);b.querySelector('b').textContent=v.t;b.querySelector('em').textContent=v.ty;
+      b.querySelector('img').src=img(v);b.querySelector('b').textContent=v.t;b.querySelector('em').textContent=v.l||v.ty;
       b.onclick=()=>show(i,true);li.append(b);list.append(li)});
   }
   function mark(){$$('li',list).forEach((li,i)=>{li.classList.toggle('on',i===idx);li.classList.toggle('playing',i===idx&&!vid.paused)})}
