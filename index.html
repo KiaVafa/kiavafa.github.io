@@ -270,16 +270,10 @@ section{position:relative}
 .fine{margin-top:18px;font-size:14px;opacity:.7;max-width:640px}
 
 /* video stage */
-.tabs{display:flex;gap:clamp(18px,4vw,56px);align-items:flex-end;border-bottom:1px solid rgb(var(--paper-rgb)/.2);padding-bottom:20px;flex-wrap:wrap}
-.tab{font-size:clamp(40px,6.6vw,96px);text-align:left;color:rgb(var(--paper-rgb)/.5);transition:color .3s;position:relative}
-.tab::before{content:"";position:absolute;left:0;right:0;bottom:-21px;height:3px;background:var(--hot);transform:scaleX(.22);transform-origin:left;transition:transform .4s var(--ease),background-color .3s}
-.tab:hover{color:rgb(var(--paper-rgb)/.85)}
-.tab:hover::before{transform:scaleX(1)}
-.tab.on::before{transform:scaleX(1);background:var(--paper)}
-.tab:not(.on) sup::after{content:" · open"}
-.tab.on{color:var(--paper)}
-.tab sup{font-stretch:100%;font-weight:600;font-size:16px;color:var(--hot);vertical-align:top;margin-left:6px;letter-spacing:0}
-.tabs .note{flex-basis:100%;font-size:14.5px;opacity:.65}
+.vid-head{display:grid;grid-template-columns:1.9fr 1fr;gap:30px;align-items:end;border-bottom:1px solid rgb(var(--paper-rgb)/.2);padding-bottom:clamp(16px,2.2vw,28px)}
+.vid-head p{max-width:440px;justify-self:end;opacity:.75;padding-bottom:.5em}
+.vid-head .n{display:block;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--hot);margin-bottom:6px}
+#music{background:color-mix(in srgb,var(--ink) 93%,var(--paper))}
 .stage{display:grid;grid-template-columns:minmax(260px,400px) minmax(0,1fr) minmax(280px,460px);gap:clamp(22px,3.2vw,48px);margin-top:clamp(26px,3.4vw,46px);align-items:start}
 .pl-wrap{position:relative;perspective:1100px}
 .glow{position:absolute;inset:-9%;width:118%;height:118%;filter:blur(46px) saturate(1.5);opacity:.6;z-index:0;border-radius:40px}
@@ -336,6 +330,12 @@ section{position:relative}
 .list.many .th{width:40px;height:50px}
 .list.many b{font-size:20px}
 .list.many em{font-size:12.5px}
+.stage.flip{grid-template-columns:minmax(0,1fr) minmax(260px,400px);grid-template-areas:"info pl" "list pl";grid-template-rows:auto 1fr}
+.flip .pl-wrap{grid-area:pl}
+.flip .info{grid-area:info}
+.flip .list{grid-area:list;display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(22px,3vw,44px);align-content:start}
+.flip .info .ttl{font-size:clamp(46px,6.2vw,100px)}
+.flip .info .desc,.flip .info .by{max-width:520px}
 .list .on .eq{opacity:1}
 .list .on.playing .eq i{animation:eq .9s ease-in-out infinite}
 .list .on.playing .eq i:nth-child(2){animation-delay:-.3s}
@@ -413,6 +413,7 @@ footer a:hover{opacity:1;color:var(--hot)}
   .stage{grid-template-columns:minmax(220px,320px) minmax(0,1fr)}
   .list{grid-column:1/-1}
   .list ul,.list{display:grid;grid-template-columns:1fr 1fr;column-gap:26px}
+  .stage.flip{grid-template-columns:minmax(0,1fr) minmax(220px,320px)}
   .games{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:820px){
@@ -436,6 +437,10 @@ footer a:hover{opacity:1;color:var(--hot)}
   .xab{grid-template-columns:1fr auto}
   .xab .wave{grid-column:1/-1;grid-row:2}
   .stage{grid-template-columns:1fr}
+  .stage.flip{grid-template-columns:1fr;grid-template-areas:"pl" "info" "list";grid-template-rows:none}
+  .flip .list{grid-template-columns:1fr}
+  .vid-head{grid-template-columns:1fr}
+  .vid-head p{justify-self:start}
   .pl-wrap{max-width:340px;margin:0 auto;width:100%}
   .list{grid-template-columns:1fr}
   .row{grid-template-columns:1fr;gap:4px;padding:14px 6px}
@@ -468,6 +473,7 @@ footer a:hover{opacity:1;color:var(--hot)}
   <div class="links">
     <a href="#room">Mix room</a>
     <a href="#video">AI video</a>
+    <a href="#music">Music videos</a>
     <a href="#services">Services</a>
     <a href="#games">Games</a>
     <a href="#about">About</a>
@@ -479,6 +485,7 @@ footer a:hover{opacity:1;color:var(--hot)}
   <button class="x" id="menuX">Close</button>
   <a class="hd" href="#room">Mix room</a>
   <a class="hd" href="#video">AI video</a>
+  <a class="hd" href="#music">Music videos</a>
   <a class="hd" href="#services">Services</a>
   <a class="hd" href="#games">Games</a>
   <a class="hd" href="#about">About</a>
@@ -502,7 +509,7 @@ footer a:hover{opacity:1;color:var(--hot)}
     <div class="shade"></div>
     <div class="hud" aria-hidden="true"><i></i>AI generated <span id="tc">00:00:00</span></div>
     <div class="hd big" aria-hidden="true"><span class="ln"><span id="wPicture" style="--d:90ms">Picture</span></span></div>
-    <p class="hd roles"><a href="#video" data-open="ads">Ads</a><i>/</i><a href="#video" data-open="mv">Music videos</a><i>/</i>Short films</p>
+    <p class="hd roles"><a href="#video">Ads</a><i>/</i><a href="#music">Music videos</a><i>/</i>Short films</p>
     <p class="lead">Ads, music videos and short films made with AI. I work with <b>Higgsfield</b>, <b>Seedance</b>, <b>Kling</b> and <b>Adobe Firefly</b> for the picture and LLMs like <b>Claude</b> for scripts and planning, then cut, grade and score it myself.</p>
     <div class="foot"><a class="go" href="#video">Watch the videos</a><button class="playbig" id="heroPlay" aria-label="Play the fight scene with sound"></button></div>
   </div>
@@ -555,42 +562,78 @@ footer a:hover{opacity:1;color:var(--hot)}
 </section>
 
 <section class="sec dark" id="video" data-t="dark">
-  <h2 class="vh">AI video</h2>
-  <div class="tabs" role="tablist">
-    <button class="hd tab on" role="tab" aria-selected="true" data-tab="ads">AI ads for brands<sup id="nAds"></sup></button>
-    <button class="hd tab" role="tab" aria-selected="false" data-tab="mv">Music videos<sup id="nMv"></sup></button>
-    <p class="note">Pick a title and it plays here with sound. The brand in a concept ad is made up, the work is real.</p>
+  <div class="vid-head">
+    <h2 class="hd sec-h rv"><span class="ln"><span>AI video</span></span></h2>
+    <p class="rv" style="--d:100ms"><span class="n">Ads for brands</span>Ads and teasers made with AI, from the first idea to the final cut. Pick a title and it plays here with sound. The brand in a concept ad is made up, the work is real.</p>
   </div>
   <div class="stage" id="stage">
     <div class="pl-wrap rv">
-      <canvas class="glow" id="glow" width="18" height="32" aria-hidden="true"></canvas>
-      <div class="player muted" id="player">
-        <img class="poster" id="poster" alt="">
-        <video id="vid" playsinline preload="none"></video>
-        <img class="wipe" id="wipe" alt="" aria-hidden="true">
-        <button class="cta-sound" id="ctaSound">Play with sound</button>
+      <canvas class="glow" width="18" height="32" aria-hidden="true"></canvas>
+      <div class="player muted">
+        <img class="poster" alt="">
+        <video playsinline preload="none"></video>
+        <img class="wipe" alt="" aria-hidden="true">
+        <button class="cta-sound">Play with sound</button>
         <span class="pausemark" aria-hidden="true"></span>
-        <div class="ctl" id="ctl">
-          <span id="vTime">0:00</span>
-          <div class="bar" id="vBar" role="slider" aria-label="Seek video" tabindex="0"><i><b id="vFill"></b></i></div>
-          <button id="vMute" aria-label="Sound on or off">
+        <div class="ctl">
+          <span class="v-time">0:00</span>
+          <div class="bar" role="slider" aria-label="Seek video" tabindex="0"><i><b></b></i></div>
+          <button class="v-mute" aria-label="Sound on or off">
             <svg class="m-on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
             <svg class="m-off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
           </button>
-          <button id="vFull" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          <button class="v-full" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         </div>
       </div>
     </div>
-    <div class="info rv" id="info" style="--d:80ms">
+    <div class="info rv" style="--d:80ms">
       <div class="swap">
-        <div class="hd ttl" id="iTitle"></div>
-        <div class="ty" id="iType"></div>
-        <p class="desc" id="iDesc"></p>
+        <div class="hd ttl"></div>
+        <div class="ty"></div>
+        <p class="desc"></p>
         <p class="by">Idea, AI picture, edit, colour and music by Kia Vafa.</p>
       </div>
-      <a class="btn hot" id="iCta" href="#contact">Want one for your brand? Send the brief</a>
+      <a class="btn hot" href="#contact">Want one for your brand? Send the brief</a>
     </div>
-    <ul class="list rv" id="list" style="--d:160ms"></ul>
+    <ul class="list rv" style="--d:160ms"></ul>
+  </div>
+</section>
+
+<section class="sec dark" id="music" data-t="dark">
+  <div class="vid-head">
+    <h2 class="hd sec-h rv"><span class="ln"><span>Music videos</span></span></h2>
+    <p class="rv" style="--d:100ms"><span class="n">For songs</span>AI music videos, short samples and before and after clips. Pick a title and it plays here with sound.</p>
+  </div>
+  <div class="stage flip" id="stageMv">
+    <div class="pl-wrap rv">
+      <canvas class="glow" width="18" height="32" aria-hidden="true"></canvas>
+      <div class="player muted">
+        <img class="poster" alt="">
+        <video playsinline preload="none"></video>
+        <img class="wipe" alt="" aria-hidden="true">
+        <button class="cta-sound">Play with sound</button>
+        <span class="pausemark" aria-hidden="true"></span>
+        <div class="ctl">
+          <span class="v-time">0:00</span>
+          <div class="bar" role="slider" aria-label="Seek video" tabindex="0"><i><b></b></i></div>
+          <button class="v-mute" aria-label="Sound on or off">
+            <svg class="m-on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <svg class="m-off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
+          </button>
+          <button class="v-full" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="info rv" style="--d:80ms">
+      <div class="swap">
+        <div class="hd ttl"></div>
+        <div class="ty"></div>
+        <p class="desc"></p>
+        <p class="by">Idea, AI picture, edit, colour and music by Kia Vafa.</p>
+      </div>
+      <a class="btn hot" href="#contact">Want one for your song? Send the track</a>
+    </div>
+    <ul class="list many rv" style="--d:160ms"></ul>
   </div>
 </section>
 
@@ -760,7 +803,7 @@ class Pair{
   pos(k=this.active){const b=this.buf[k];if(!b)return 0;let t=this.off[k];if(this.playing)t+=ctx.currentTime-this.t0;return t%b.duration}
   play(){
     if(this.playing||!this.buf[this.active])return;
-    pairs.forEach(p=>p!==this&&p.pause());stage&&stage.hush();
+    pairs.forEach(p=>p!==this&&p.pause());stages.forEach(s=>s.hush());
     const c=audio();this.t0=c.currentTime;
     for(const k of['A','B']){const b=this.buf[k];if(!b)continue;
       const s=c.createBufferSource();s.buffer=b;s.loop=true;const g=c.createGain();g.gain.value=k===this.active?1:0;
@@ -925,24 +968,29 @@ let roomOn=false;new IntersectionObserver(e=>{roomOn=e[0].isIntersecting},{thres
 addEventListener('keydown',e=>{if(!roomOn||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;const k=e.key.toLowerCase();if(k==='a'||k==='b'){room.use(k.toUpperCase())}});
 roomUI();
 
-/* ---------- video stage ---------- */
-const stage=(()=>{
-  const player=$('#player'),vid=$('#vid'),poster=$('#poster'),wipe=$('#wipe'),info=$('#info'),list=$('#list'),glow=$('#glow'),gc=glow.getContext('2d');
-  const fill=$('#vFill'),vTime=$('#vTime'),bar=$('#vBar');
-  let tab='ads',idx=0,sound=false,inView=false,swapT;
-  $('#nAds').textContent=VID.ads.length;$('#nMv').textContent=VID.mv.length;
-  const cur=()=>VID[tab][idx],src=v=>'assets/video/v-'+v.id+'.mp4',img=v=>'assets/img/v/'+v.id+'.jpg';
+/* ---------- video stages ---------- */
+const stages=[];
+function Stage(root,items){
+  const q=s=>$(s,root);
+  const player=q('.player'),vid=q('video'),poster=q('.poster'),wipe=q('.wipe'),info=q('.info'),list=q('.list'),glow=q('.glow'),gc=glow.getContext('2d');
+  const fill=q('.bar b'),vTime=q('.v-time'),bar=q('.bar'),ttl=q('.ttl'),ty=q('.ty'),desc=q('.desc');
+  let idx=0,sound=false,inView=false,swapT;
+  const me={frame,
+    hush(){if(!sound)return;sound=false;vid.muted=true;vid.loop=true;player.classList.remove('sound','paused');player.classList.add('muted');if(!inView)vid.pause();else if(vid.paused){const p=vid.play();if(p)p.catch(()=>{})}},
+    play(id){show(Math.max(0,items.findIndex(v=>v.id===id)),true)}};
+  const quiet=()=>{pairs.forEach(p=>p.pause());stages.forEach(s=>s!==me&&s.hush())};
+  const src=v=>'assets/video/v-'+v.id+'.mp4',img=v=>'assets/img/v/'+v.id+'.jpg';
   function build(){
-    list.innerHTML='';list.classList.toggle('many',VID[tab].length>8);
-    VID[tab].forEach((v,i)=>{const li=document.createElement('li');li.style.setProperty('--i',i);
+    list.innerHTML='';
+    items.forEach((v,i)=>{const li=document.createElement('li');li.style.setProperty('--i',i);
       const b=document.createElement('button');b.innerHTML='<span class="th"><img loading="lazy" alt=""></span><b></b><em></em><span class="eq"><i></i><i></i><i></i></span>';
       b.querySelector('img').src=img(v);b.querySelector('b').textContent=v.t;b.querySelector('em').textContent=v.l||v.ty;
       b.onclick=()=>show(i,true);li.append(b);list.append(li)});
   }
   function mark(){$$('li',list).forEach((li,i)=>{li.classList.toggle('on',i===idx);li.classList.toggle('playing',i===idx&&!vid.paused)})}
   function show(i,withSound,first){
-    idx=i;const v=cur();
-    if(withSound){sound=true;pairs.forEach(p=>p.pause())}
+    idx=i;const v=items[idx];
+    if(withSound){sound=true;quiet()}
     player.classList.toggle('sound',sound);player.classList.toggle('muted',!sound);player.classList.remove('paused');
     // picture: wipe the new poster over the old one
     wipe.className='wipe'+(v.sq?' sq':'');wipe.src=img(v);
@@ -950,29 +998,27 @@ const stage=(()=>{
       vid.muted=!sound;vid.loop=!sound;vid._want=inView||!!withSound;setSrc(vid,src(v));if(vid._want){const p=vid.play();if(p)p.catch(()=>{})}};
     if(first||RM){land()}else{void wipe.offsetWidth;wipe.classList.add('go');clearTimeout(swapT);vid.pause();swapT=setTimeout(land,500)}
     // words
-    const put=()=>{$('#iTitle').textContent=v.t;$('#iType').textContent=v.ty;$('#iDesc').textContent=v.d;
-      $('#iCta').textContent=tab==='ads'?'Want one for your brand? Send the brief':'Want one for your song? Send the track';info.classList.remove('out')};
+    const put=()=>{ttl.textContent=v.t;ty.textContent=v.ty;desc.textContent=v.d;info.classList.remove('out')};
     if(first||RM)put();else{info.classList.add('out');setTimeout(put,200)}
     mark();
   }
   vid.addEventListener('playing',()=>{player.classList.add('live');player.classList.remove('paused');mark()});
   vid.addEventListener('pause',()=>{if(sound&&!vid.ended)player.classList.add('paused');mark()});
-  vid.addEventListener('ended',()=>{if(sound)show((idx+1)%VID[tab].length,true)});
+  vid.addEventListener('ended',()=>{if(sound)show((idx+1)%items.length,true)});
   vid.addEventListener('error',()=>{if(vid.getAttribute('src'))toast('This video could not be loaded.')});
-  function soundOn(){sound=true;pairs.forEach(p=>p.pause());player.classList.add('sound');player.classList.remove('muted','paused');vid.loop=false;vid.muted=false;vid.currentTime=0;const p=vid.play();if(p)p.catch(()=>{})}
-  $('#ctaSound').onclick=e=>{e.stopPropagation();soundOn()};
-  player.addEventListener('click',e=>{if(e.target.closest('.ctl'))return;if(!sound)return soundOn();vid.paused?vid.play():vid.pause()});
-  $('#vMute').onclick=()=>{if(!sound)return soundOn();vid.muted=!vid.muted;player.classList.toggle('muted',vid.muted);if(!vid.muted)pairs.forEach(p=>p.pause())};
-  $('#vFull').onclick=()=>{const f=vid.requestFullscreen||vid.webkitRequestFullscreen||vid.webkitEnterFullscreen;if(f)f.call(vid)};
+  function soundOn(){sound=true;quiet();player.classList.add('sound');player.classList.remove('muted','paused');vid.loop=false;vid.muted=false;vid.currentTime=0;const p=vid.play();if(p)p.catch(()=>{})}
+  q('.cta-sound').onclick=e=>{e.stopPropagation();soundOn()};
+  player.addEventListener('click',e=>{if(e.target.closest('.ctl'))return;if(!sound)return soundOn();if(vid.paused){quiet();vid.play()}else vid.pause()});
+  q('.v-mute').onclick=()=>{if(!sound)return soundOn();vid.muted=!vid.muted;player.classList.toggle('muted',vid.muted);if(!vid.muted)quiet()};
+  q('.v-full').onclick=()=>{const f=vid.requestFullscreen||vid.webkitRequestFullscreen||vid.webkitEnterFullscreen;if(f)f.call(vid)};
   const seek=e=>{const r=bar.getBoundingClientRect();if(vid.duration)vid.currentTime=clamp((e.clientX-r.left)/r.width,0,1)*vid.duration};
   let drag=false;bar.addEventListener('pointerdown',e=>{bar.setPointerCapture(e.pointerId);drag=true;seek(e)});bar.addEventListener('pointermove',e=>{if(drag)seek(e)});bar.addEventListener('pointerup',()=>drag=false);bar.addEventListener('pointercancel',()=>drag=false);
   bar.addEventListener('keydown',e=>{if(!vid.duration)return;if(e.key==='ArrowRight')vid.currentTime=Math.min(vid.duration,vid.currentTime+2);if(e.key==='ArrowLeft')vid.currentTime=Math.max(0,vid.currentTime-2)});
-  $$('.tab').forEach(b=>b.onclick=()=>{if(b.dataset.tab===tab)return;tab=b.dataset.tab;$$('.tab').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});sound=false;build();show(0,false)});
   // tilt
-  const wrap=$('.pl-wrap');
+  const wrap=q('.pl-wrap');
   if(!RM&&matchMedia('(hover:hover)').matches){
-    $('#stage').addEventListener('pointermove',e=>{const r=player.getBoundingClientRect();const x=clamp((e.clientX-(r.left+r.width/2))/r.width,-1.5,1.5),y=clamp((e.clientY-(r.top+r.height/2))/r.height,-1,1);player.style.setProperty('--ry',(x*4).toFixed(2)+'deg');player.style.setProperty('--rx',(-y*3).toFixed(2)+'deg')});
-    $('#stage').addEventListener('pointerleave',()=>{player.style.setProperty('--ry','0deg');player.style.setProperty('--rx','0deg')});
+    root.addEventListener('pointermove',e=>{const r=player.getBoundingClientRect();const x=clamp((e.clientX-(r.left+r.width/2))/r.width,-1.5,1.5),y=clamp((e.clientY-(r.top+r.height/2))/r.height,-1,1);player.style.setProperty('--ry',(x*4).toFixed(2)+'deg');player.style.setProperty('--rx',(-y*3).toFixed(2)+'deg')});
+    root.addEventListener('pointerleave',()=>{player.style.setProperty('--ry','0deg');player.style.setProperty('--rx','0deg')});
   }
   new IntersectionObserver(e=>{inView=e[0].isIntersecting;if(inView){if(vid.paused&&!player.classList.contains('paused')){const p=vid.play();if(p)p.catch(()=>{})}}else if(!document.fullscreenElement){vid.pause();player.classList.remove('paused')}},{threshold:.25}).observe(wrap);
   let gl=0;
@@ -981,11 +1027,11 @@ const stage=(()=>{
     if(inView&&t-gl>90){gl=t;try{if(vid.readyState>=2&&player.classList.contains('live'))gc.drawImage(vid,0,0,18,32);else if(poster.complete&&poster.naturalWidth)gc.drawImage(poster,0,0,18,32)}catch(e){}}
   }
   build();show(0,false,true);
-  return{frame,hush(){if(sound&&!vid.paused)vid.pause()},play(id){const i=VID.ads.findIndex(v=>v.id===id);if(tab!=='ads'){tab='ads';$$('.tab').forEach(x=>{const on=x.dataset.tab==='ads';x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});build()}show(Math.max(0,i),true)}};
-})();
-$$('.roles a[data-open]').forEach(a=>a.addEventListener('click',()=>{const b=$('.tab[data-tab="'+a.dataset.open+'"]');if(b)b.click()}));
+  return me;
+}
+const stageAds=Stage($('#stage'),VID.ads),stageMv=Stage($('#stageMv'),VID.mv);stages.push(stageAds,stageMv);
 $('#sndPlay').onclick=()=>{$('#room').scrollIntoView({behavior:RM?'auto':'smooth'});ensureRoom().then(()=>{room.use('B');if(!room.playing)room.play()}).catch(()=>{})};
-$('#heroPlay').onclick=()=>{$('#video').scrollIntoView({behavior:RM?'auto':'smooth'});stage.play('parking-fight')};
+$('#heroPlay').onclick=()=>{$('#video').scrollIntoView({behavior:RM?'auto':'smooth'});stageAds.play('parking-fight')};
 
 /* ---------- hero video, nav, reveals ---------- */
 const heroEl=$('#top'),heroVid=$('#heroVid');
@@ -1045,7 +1091,7 @@ function loop(t){
   readLevels(t);
   orbRoom.draw(t,dt);
   if(room.buf[room.active]&&roomFor===ri){rmWave.prog=room.pos()/room.dur();rmTime.textContent=fmt(room.pos())+' / '+fmt(room.dur())}else{rmWave.prog=0;rmTime.textContent='0:00 / '+fmt(PEAKS[TRACKS[ri].id+'-mixed'].d)}
-  rmWave.draw();stage.frame(t);
+  rmWave.draw();stageAds.frame(t);stageMv.frame(t);
   if(!RM){
     const live=energy>.02;
     tickV*=.92;for(const m of marqs){if(!m.w||!m.vis)continue;m.x+=m.dir*dt*m.base*(1+Math.min(1.2,tickV)*2);if(m.x<-m.w)m.x+=m.w;if(m.x>0)m.x-=m.w;m.el.style.transform='translate3d('+m.x.toFixed(1)+'px,0,0)'}

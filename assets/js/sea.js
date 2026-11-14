@@ -104,11 +104,11 @@ function size() {
 }
 new ResizeObserver(size).observe(cv); size();
 const hz = z => halfH * (10 - z) / 10, hw = z => halfW * (10 - z) / 10;
-const uTime = { value: 0 }, uA = { value: MOB ? .4 : .34 }, gBell = bellGeo(), jellies = [];
+const uTime = { value: 0 }, uA = { value: MOB ? .2 : .17 }, gBell = bellGeo(), jellies = [];
 const TINTS = [[.88, .94, 1], [.93, .9, 1], [.87, .98, .96], [1, .95, .9]];
 // [size, depth]
-const CFG = MOB ? [[.3, 1], [.2, 0], [.17, -1.4], [.24, .4], [.14, -2.8]]
-                : [[.44, 1.3], [.3, 0], [.25, -1.3], [.36, .6], [.2, -2.8], [.17, -3.4], [.3, .1], [.16, -2.1]];
+const CFG = MOB ? [[.26, .6], [.17, -1.6]]
+                : [[.4, 1.1], [.27, -.6], [.2, -2.6]];
 CFG.forEach(([s, z], i) => {
   const g = new T.Group(), dim = clamp(.92 + z * .1, .45, 1.05), tint = new T.Color().fromArray(TINTS[i % 4]);
   const U = { uC: { value: 0 }, uGlow: { value: 0 }, uDim: { value: dim }, uTint: { value: tint }, uTime, uA, uDrag: { value: new T.Vector3() } };
