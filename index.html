@@ -143,6 +143,8 @@ section{position:relative}
 .big{font-size:min(13.6vw,27svh);margin-left:-.02em}
 .roles{font-size:clamp(20px,2.3vw,34px);margin-top:.5em;line-height:1}
 .roles i{font-style:normal;color:var(--hot);margin:0 .28em}
+.roles a{text-decoration:none}
+.roles a:hover{color:var(--hot)}
 .lead{max-width:430px;margin-top:18px;font-size:clamp(16px,1.25vw,19px)}
 .half>*{position:relative;z-index:2}
 .half>.roles,.half>.lead,.half>.foot{z-index:4}
@@ -178,11 +180,21 @@ section{position:relative}
 .bwrap{position:absolute;left:50%;top:76%;z-index:5;width:var(--bd);height:var(--bd);transform:translate(-50%,-50%);transition:scale .7s cubic-bezier(.3,1.5,.5,1) .5s}
 .hero.pre .bwrap{scale:0}
 .badge{position:absolute;inset:0;border-radius:50%;background:var(--hot);color:var(--ink);display:grid;place-items:center;text-align:center;font-stretch:62%;font-weight:800;font-size:clamp(16px,1.55vw,23px);line-height:.98;text-transform:uppercase;text-decoration:none;transition:background-color .25s}
-.badge:hover{background:var(--paper)}
-#eelCv{position:absolute;left:50%;top:50%;width:390%;height:390%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;filter:drop-shadow(0 6px 6px rgb(0 0 0/.42))}
-#seaCv{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
-#seaCv,#eelCv{opacity:0;transition:opacity 1.6s ease .5s}
-.hero.sea-on #seaCv,.hero.sea-on #eelCv{opacity:1}
+#seaCv{position:fixed;inset:0;width:100%;height:100%;z-index:55;pointer-events:none;mix-blend-mode:difference;opacity:0;transition:opacity 2.5s ease .8s}
+#seaCv.on{opacity:1}
+.ring{position:absolute;left:50%;top:50%;width:400%;height:400%;transform:translate(-50%,-50%);pointer-events:none;overflow:visible}
+.ring-b{z-index:0}.badge{z-index:1}.ring-f{z-index:2}
+.ring .o ellipse{fill:none;stroke:var(--paper);stroke-width:1.1;opacity:.5;vector-effect:non-scaling-stroke}
+.ring .o circle{fill:var(--paper)}
+.ring .orbAll{transition:opacity .4s}
+.bwrap:hover .orbAll,.bwrap.peek .orbAll{opacity:.45}
+.cat-h{fill:var(--paper);transform:translateY(40px);transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.cat .eye{fill:var(--ink);transform-box:fill-box;transform-origin:center;animation:blink 3.4s infinite}
+.cat-t{fill:none;stroke:var(--paper);stroke-width:6.5;stroke-linecap:round;transform-origin:36px 14px;transform:rotate(-80deg) scale(.25);opacity:0;transition:transform .5s cubic-bezier(.3,1.4,.5,1) .08s,opacity .2s}
+.bwrap:hover .cat-h,.bwrap.peek .cat-h{transform:translateY(-14px)}
+.bwrap:hover .cat-t,.bwrap.peek .cat-t{opacity:1;transform:none;animation:wag .7s ease-in-out .55s infinite alternate}
+@keyframes wag{from{transform:rotate(-8deg)}to{transform:rotate(12deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 
 /* tools tapes */
 .tapes{position:relative;z-index:7;height:124px;background:var(--paper)}
@@ -259,8 +271,12 @@ section{position:relative}
 
 /* video stage */
 .tabs{display:flex;gap:clamp(18px,4vw,56px);align-items:flex-end;border-bottom:1px solid rgb(var(--paper-rgb)/.2);padding-bottom:20px;flex-wrap:wrap}
-.tab{font-size:clamp(40px,6.6vw,96px);text-align:left;color:rgb(var(--paper-rgb)/.28);transition:color .3s;position:relative}
-.tab:hover{color:rgb(var(--paper-rgb)/.6)}
+.tab{font-size:clamp(40px,6.6vw,96px);text-align:left;color:rgb(var(--paper-rgb)/.5);transition:color .3s;position:relative}
+.tab::before{content:"";position:absolute;left:0;right:0;bottom:-21px;height:3px;background:var(--hot);transform:scaleX(.22);transform-origin:left;transition:transform .4s var(--ease),background-color .3s}
+.tab:hover{color:rgb(var(--paper-rgb)/.85)}
+.tab:hover::before{transform:scaleX(1)}
+.tab.on::before{transform:scaleX(1);background:var(--paper)}
+.tab:not(.on) sup::after{content:" · open"}
 .tab.on{color:var(--paper)}
 .tab sup{font-stretch:100%;font-weight:600;font-size:16px;color:var(--hot);vertical-align:top;margin-left:6px;letter-spacing:0}
 .tabs .note{flex-basis:100%;font-size:14.5px;opacity:.65}
@@ -316,6 +332,10 @@ section{position:relative}
 .list .eq{grid-row:1/3;grid-column:3;display:flex;gap:3px;align-items:flex-end;height:18px;opacity:0}
 .list .eq i{width:3px;height:100%;background:var(--hot);transform-origin:bottom;transform:scaleY(.3)}
 .list .on b{color:var(--hot)}
+.list.many button{grid-template-columns:40px 1fr auto;padding:7px 0;column-gap:14px}
+.list.many .th{width:40px;height:50px}
+.list.many b{font-size:20px}
+.list.many em{font-size:12.5px}
 .list .on .eq{opacity:1}
 .list .on.playing .eq i{animation:eq .9s ease-in-out infinite}
 .list .on.playing .eq i:nth-child(2){animation-delay:-.3s}
@@ -442,6 +462,7 @@ footer a:hover{opacity:1;color:var(--hot)}
 <body>
 <!--PAGE-START-->
 <div class="prog" id="prog" aria-hidden="true"></div>
+<canvas id="seaCv" aria-hidden="true"></canvas>
 <nav class="nav" id="nav" data-t="split" aria-label="Main">
   <a class="logo" href="#top">Kia Vafa</a>
   <div class="links">
@@ -481,14 +502,17 @@ footer a:hover{opacity:1;color:var(--hot)}
     <div class="shade"></div>
     <div class="hud" aria-hidden="true"><i></i>AI generated <span id="tc">00:00:00</span></div>
     <div class="hd big" aria-hidden="true"><span class="ln"><span id="wPicture" style="--d:90ms">Picture</span></span></div>
-    <p class="hd roles">Ads<i>/</i>Music videos<i>/</i>Short films</p>
+    <p class="hd roles"><a href="#video" data-open="ads">Ads</a><i>/</i><a href="#video" data-open="mv">Music videos</a><i>/</i>Short films</p>
     <p class="lead">Ads, music videos and short films made with AI. I work with <b>Higgsfield</b>, <b>Seedance</b>, <b>Kling</b> and <b>Adobe Firefly</b> for the picture and LLMs like <b>Claude</b> for scripts and planning, then cut, grade and score it myself.</p>
     <div class="foot"><a class="go" href="#video">Watch the videos</a><button class="playbig" id="heroPlay" aria-label="Play the fight scene with sound"></button></div>
   </div>
 
-  <canvas id="seaCv" aria-hidden="true"></canvas>
   <div class="div" id="div" aria-hidden="true"></div>
-  <div class="bwrap" id="bwrap"><a class="badge" id="badge" href="#games" aria-label="Kia Vafa games">Kia<br>Vafa<br>Games</a><canvas id="eelCv" aria-hidden="true"></canvas></div>
+  <div class="bwrap" id="bwrap">
+    <svg class="ring ring-b" viewBox="-200 -200 400 400" aria-hidden="true"><g class="orbAll"><g class="o" transform="rotate(-30)"><ellipse rx="71" ry="24"/><circle r="3"/></g><g class="o" transform="rotate(30)"><ellipse rx="71" ry="24"/><circle r="3"/></g><g class="o" transform="rotate(90)"><ellipse rx="71" ry="24"/><circle r="3"/></g></g><g class="cat"><g class="cat-h"><path d="M-25 -42Q-28 -60 -23 -69Q-11 -62 -4 -53Z"/><path d="M25 -42Q28 -60 23 -69Q11 -62 4 -53Z"/><ellipse cx="0" cy="-36" rx="26" ry="21"/><ellipse class="eye" cx="-9.5" cy="-41" rx="2.8" ry="4"/><ellipse class="eye" cx="9.5" cy="-41" rx="2.8" ry="4"/></g><path class="cat-t" d="M36 14C66 16 82 -8 66 -34"/></g></svg>
+    <a class="badge" id="badge" href="#games" aria-label="Kia Vafa games">Kia<br>Vafa<br>Games</a>
+    <svg class="ring ring-f" viewBox="-200 -200 400 400" aria-hidden="true"><defs><clipPath id="fh"><rect x="-90" y="0" width="180" height="40"/></clipPath></defs><g class="orbAll"><g class="o" transform="rotate(-30)"><ellipse rx="71" ry="24" clip-path="url(#fh)"/><circle r="3"/></g><g class="o" transform="rotate(30)"><ellipse rx="71" ry="24" clip-path="url(#fh)"/><circle r="3"/></g><g class="o" transform="rotate(90)"><ellipse rx="71" ry="24" clip-path="url(#fh)"/><circle r="3"/></g></g></svg>
+  </div>
 </header>
 <div class="tapes" id="tick" role="img" aria-label="Tools: Higgsfield, Seedance, Kling, Adobe Firefly, Photoshop, Premiere Pro, DaVinci Resolve, Blender, Claude, UAD, Cubase, Ableton. Also: vibe coding and game design.">
   <div class="tape t2" aria-hidden="true"><div class="tick-in" id="tickIn2"></div></div>
@@ -698,13 +722,18 @@ const VID={
   {id:'night-crew',t:'Product ad',ty:'Concept · night serum · 18 seconds',l:'A tiny crew repairs the skin overnight · 18s',d:'A tiny work crew climbs out of the dropper and repairs the skin while she sleeps. The serum brand is made up for the sample.'}
  ],
  mv:[
+  {id:'333',t:'3:33',ty:'Music video · best moments · 19 seconds',d:'Scarecrows, cracked masks and candle crowns under three moons. Moments from the video for my track 3:33.'},
   {id:'move-on',t:'Move On',ty:'Music video · first minute',d:'The story video for my own song Move On. This is the opening minute with the lyrics on screen.'},
   {id:'sunken-opera',t:'Sunken Opera',ty:'Music video sample · 8 seconds',d:'A masked singer and an orchestra of divers in a flooded opera house.'},
   {id:'sky-whale',t:'Sky Whale Festival',ty:'Music video sample · 8 seconds',d:'A festival carried above the clouds on the back of a whale.'},
   {id:'vinyl-ocean',t:'Vinyl Ocean',ty:'Music video sample · 8 seconds',d:'A night sea that turns out to be a spinning record.'},
   {id:'liquid-speaker',t:'Liquid Speaker',ty:'Music video sample · 8 seconds',d:'Sound pulled out of a speaker as liquid light.'},
   {id:'ice-moon',t:'Ice Moon Festival',ty:'Music video sample · 8 seconds',d:'A procession across the ice to a stage under the northern lights.'},
-  {id:'jungle-temple',t:'Jungle Temple',ty:'Music video sample · 8 seconds',d:'A night ceremony with drums at a pyramid in the jungle.'}
+  {id:'jungle-temple',t:'Jungle Temple',ty:'Music video sample · 8 seconds',d:'A night ceremony with drums at a pyramid in the jungle.'},
+  {id:'ba-wrong-miss',t:'Wrong Miss',ty:'Before and after · 14 seconds',d:'The same song at the same loudness, first the raw file and then my mix and master, over a street of lights.'},
+  {id:'ba-wtlf',t:'Where the Leaves Fall',ty:'Before and after · 14 seconds',d:'The raw mix against the finished master, with the rain scene from the song.'},
+  {id:'ba-move-on-vocal',t:'Move On · vocal',ty:'Before and after · 15 seconds',d:'The raw vocal recording, then the final mix, cut to scenes from the Move On video.'},
+  {id:'ba-move-on-lanterns',t:'Move On · lanterns',ty:'Before and after · 15 seconds',d:'The lantern scenes from Move On, switching from the raw recording to the final mix.'}
  ]
 };
 
@@ -904,7 +933,7 @@ const stage=(()=>{
   $('#nAds').textContent=VID.ads.length;$('#nMv').textContent=VID.mv.length;
   const cur=()=>VID[tab][idx],src=v=>'assets/video/v-'+v.id+'.mp4',img=v=>'assets/img/v/'+v.id+'.jpg';
   function build(){
-    list.innerHTML='';
+    list.innerHTML='';list.classList.toggle('many',VID[tab].length>8);
     VID[tab].forEach((v,i)=>{const li=document.createElement('li');li.style.setProperty('--i',i);
       const b=document.createElement('button');b.innerHTML='<span class="th"><img loading="lazy" alt=""></span><b></b><em></em><span class="eq"><i></i><i></i><i></i></span>';
       b.querySelector('img').src=img(v);b.querySelector('b').textContent=v.t;b.querySelector('em').textContent=v.l||v.ty;
@@ -954,6 +983,7 @@ const stage=(()=>{
   build();show(0,false,true);
   return{frame,hush(){if(sound&&!vid.paused)vid.pause()},play(id){const i=VID.ads.findIndex(v=>v.id===id);if(tab!=='ads'){tab='ads';$$('.tab').forEach(x=>{const on=x.dataset.tab==='ads';x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});build()}show(Math.max(0,i),true)}};
 })();
+$$('.roles a[data-open]').forEach(a=>a.addEventListener('click',()=>{const b=$('.tab[data-tab="'+a.dataset.open+'"]');if(b)b.click()}));
 $('#sndPlay').onclick=()=>{$('#room').scrollIntoView({behavior:RM?'auto':'smooth'});ensureRoom().then(()=>{room.use('B');if(!room.playing)room.play()}).catch(()=>{})};
 $('#heroPlay').onclick=()=>{$('#video').scrollIntoView({behavior:RM?'auto':'smooth'});stage.play('parking-fight')};
 
@@ -976,6 +1006,14 @@ function Marq(el,html,reps,base,dir){el.innerHTML=html.repeat(reps);const m={x:0
 const marqs=[Marq(tickIn,tickSet,3,.045,-1),Marq($('#tickIn2'),skillSet,5,.032,1),Marq($('#mqIn'),'<span>Sound</span><span>Picture</span>',6,.07,1)];
 const heads=MOB?[]:$$('.sec-h').map(h=>({h,l:$$('.ln',h)}));
 const prog=$('#prog'),tc=$('#tc'),divEl=$('#div');let tcLast='';
+/* badge: atom orbits, and a cat that peeks */
+const bw=$('#bwrap'),orbAll=$$('.orbAll'),orbF=$$('.ring-f g.o circle'),orbs=$$('.ring-b g.o circle').map((b,i)=>({b,f:orbF[i],th:i*2.1,sp:[1.5,-1.15,.9][i]}));
+let orbRot=0,orbBoost=0,bwHover=false;bw.addEventListener('pointerenter',()=>{bwHover=true});bw.addEventListener('pointerleave',()=>{bwHover=false});
+function orbStep(dt){orbBoost+=((bwHover?1:0)-orbBoost)*.06;orbRot+=dt*.004*(1+orbBoost*2);orbAll.forEach(g=>g.setAttribute('transform','rotate('+orbRot.toFixed(2)+')'));
+  for(const o of orbs){o.th+=dt*.001*o.sp*(1+orbBoost*1.6);const sn=Math.sin(o.th),x=(71*Math.cos(o.th)).toFixed(1),y=(24*sn).toFixed(1),r=(3.1+1.1*sn).toFixed(2);
+    for(const c of[o.b,o.f]){c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',r)}o.f.style.opacity=sn>0?1:0;o.b.style.opacity=sn>0?0:1}}
+orbStep(0);
+if(!RM)setInterval(()=>{if(document.hidden||scrollY>innerHeight*.6)return;bw.classList.add('peek');setTimeout(()=>bw.classList.remove('peek'),3400)},11000);
 const nav=$('#nav'),secs=$$('[data-t]').filter(e=>e!==nav);
 let lastY=scrollY;
 function navTheme(){
@@ -1012,6 +1050,7 @@ function loop(t){
     const live=energy>.02;
     tickV*=.92;for(const m of marqs){if(!m.w||!m.vis)continue;m.x+=m.dir*dt*m.base*(1+Math.min(1.2,tickV)*2);if(m.x<-m.w)m.x+=m.w;if(m.x>0)m.x-=m.w;m.el.style.transform='translate3d('+m.x.toFixed(1)+'px,0,0)'}
     if(ready&&scrollY<innerHeight){
+      orbStep(dt);
       divEl.style.setProperty('--e',(live?Math.min(1,.1+energy*2.4):0).toFixed(3));
       for(let i=0;i<chS.length;i++){const c=chS[i];c._b*=.9;c.style.setProperty('--y',(1+(live?levels[SB[i]]*.36:.012+.012*Math.sin(t*.0016+i*.9))+c._b).toFixed(3))}
       for(let i=0;i<chP.length;i++){const c=chP[i];c._b*=.9;c.style.setProperty('--y',(1+.012+.012*Math.sin(t*.0016+i*.8+2)+c._b).toFixed(3))}
