@@ -182,7 +182,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </style>
 </head>
 <body>
-<div id="bg"><video id="v1" muted playsinline loop preload="auto"></video><video id="v2" muted playsinline loop preload="auto"></video></div>
+<div id="bg"><video id="v1" poster="art/poster_pit.webp" muted playsinline loop preload="auto"></video><video id="v2" poster="art/poster_pit.webp" muted playsinline loop preload="auto"></video></div>
 <canvas id="caustics"></canvas>
 <div id="shade"></div>
 
@@ -209,7 +209,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </div>
 
 <section class="screen show" id="titleScreen">
-  <video id="titleVid" muted playsinline loop autoplay preload="auto"></video>
+  <video id="titleVid" poster="art/poster_title.webp" muted playsinline loop autoplay preload="auto"></video>
   <div class="title-kicker">A DEEP-SEA CLIMB</div>
   <h1 class="title-main">SUNKEN<br>OPERA</h1>
   <div class="title-sub">One hundred steps from the orchestra pit to the light.</div>
@@ -223,7 +223,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </section>
 
 <section class="screen" id="winScreen">
-  <video id="winVid" muted playsinline loop preload="auto"></video>
+  <video id="winVid" poster="art/poster_surface.webp" muted playsinline loop preload="auto"></video>
   <div class="title-kicker">DAWN AT THE SURFACE</div>
   <h1 class="title-main" style="font-size:clamp(34px,8.5vw,70px)">SHE MADE IT</h1>
   <div class="stars" id="stars"></div>
@@ -233,7 +233,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </section>
 
 <section class="screen" id="loseScreen">
-  <video id="loseVid" muted playsinline loop preload="none"></video>
+  <video id="loseVid" poster="art/poster_ruins.webp" muted playsinline loop preload="none"></video>
   <div class="title-kicker">OUT OF AIR</div>
   <h1 class="title-main" style="font-size:clamp(32px,8vw,66px)">THE SEA KEEPS HER</h1>
   <div class="title-sub" id="loseSub" style="margin:12px 0 18px"></div>
@@ -243,7 +243,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </section>
 
 <section class="screen" id="wardScreen">
-  <video id="wardVid" muted playsinline loop preload="none"></video>
+  <video id="wardVid" poster="art/poster_dome.webp" muted playsinline loop preload="none"></video>
   <div class="wrap">
     <div class="title-kicker">PEARLS SAVED FROM EVERY CLIMB</div>
     <h1 class="title-main" style="font-size:clamp(30px,8vw,58px)">MARA'S WARDROBE</h1>
@@ -398,6 +398,7 @@ PAINTED.forEach(k=>loadImg('card_'+k));
 const vids = [$('v1'),$('v2')]; let vidIdx = 0, curBg = '';
 function setSources(v, name){
   v.innerHTML = '';
+  v.poster = 'art/poster_'+name+'.webp';
   const a = document.createElement('source'); a.src='art/bg_'+name+'.webm'; a.type='video/webm';
   const b = document.createElement('source'); b.src='art/bg_'+name+'.mp4'; b.type='video/mp4';
   v.appendChild(a); v.appendChild(b); v.load();
