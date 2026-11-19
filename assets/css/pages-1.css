@@ -83,6 +83,17 @@ h2.hd{font-size:clamp(40px,6.4vw,96px);margin-bottom:clamp(22px,3vw,40px)}
 .game p{max-width:520px;margin-bottom:8px}
 .game .lk{display:flex;gap:18px;flex-wrap:wrap;font-weight:700;margin-top:10px}
 .game .lk a{text-decoration:none;border-bottom:2px solid var(--hot)}
+h1.art-h{font-size:clamp(38px,6vw,88px);max-width:18ch}
+.art{max-width:760px}
+.art h2{font-size:clamp(24px,2.6vw,32px);line-height:1.15;margin:44px 0 14px}
+.art p{margin-bottom:16px;font-size:18px}
+.art ul,.art ol{margin:0 0 18px 22px;font-size:18px}
+.art li{margin-bottom:10px}
+.art a{text-decoration-color:var(--hot);text-underline-offset:3px;text-decoration-thickness:2px}
+.art .vid{max-width:300px;margin:0 0 34px}
+.posts h3 a{text-decoration:none}
+.posts h3 a:hover{color:var(--hot)}
+.posts small{opacity:.6}
 footer{background:var(--ink);color:var(--paper);padding:26px var(--pad);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;border-top:1px solid rgb(var(--paper-rgb)/.14)}
 footer nav{display:flex;gap:18px;flex-wrap:wrap}
 footer a{text-decoration:none;opacity:.75}
