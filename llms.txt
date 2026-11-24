@@ -13,6 +13,10 @@ Contact: studio@kiavafa.com (video and ads), mix@kiavafa.com (mixing and masteri
 - [AI video and short films](https://kiavafa.com/ai-video/): AI short films, teasers and action scenes, cut, graded and scored by hand.
 - [AI music videos](https://kiavafa.com/music-videos/): Music videos cut to the beat of a song, from a short vertical teaser to a full story video.
 
+## Examples
+
+- [AURIQ](https://kiavafa.com/watch/auriq-ad/): A 15 second AI product ad for a made-up headphone brand. AI video, cut to the music.
+
 ## Guides
 
 - [How to make a Suno song sound better](https://kiavafa.com/blog/how-to-make-a-suno-song-sound-better/)
