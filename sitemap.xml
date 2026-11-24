@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://kiavafa.com/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/mixing-mastering/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/ai-song-mixing/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/music-production/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/ai-ads/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/ai-video/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/music-videos/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/games/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/snake-rumble/</loc>
@@ -49,95 +49,401 @@
     <lastmod>2026-11-19</lastmod>
   </url>
   <url>
+    <loc>https://kiavafa.com/watch/auriq-ad/</loc>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/auriq-ad.jpg</video:thumbnail_loc>
+      <video:title>AURIQ: AI headphone ad, AI product video concept</video:title>
+      <video:description>A 15 second AI product ad for a made-up headphone brand. AI video, cut to the music. An AI video ad concept by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-auriq-ad.mp4</video:content_loc>
+      <video:duration>15</video:duration>
+      <video:publication_date>2026-11-24T00:00:00+00:00</video:publication_date>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+      <video:tag>AI headphone ad</video:tag>
+    </video:video>
+  </url>
+  <url>
     <loc>https://kiavafa.com/watch/egg-sandwich/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/egg-sandwich.jpg</video:thumbnail_loc>
+      <video:title>Egg Sandwich: AI video ad concept</video:title>
+      <video:description>Toast, egg and melting cheese drop in and stack into one breakfast sandwich with the KiaVafa name on the bun. An AI food ad concept by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-egg-sandwich.mp4</video:content_loc>
+      <video:duration>17</video:duration>
+      <video:publication_date>2026-11-17T14:30:00+00:00</video:publication_date>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+      <video:tag>AI food ad</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/showreel-teaser/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/showreel-teaser.jpg</video:thumbnail_loc>
+      <video:title>Kia Vafa showreel teaser: AI films and ads</video:title>
+      <video:description>A 12-second teaser cut from Kia Vafa&#x27;s AI films, product ads and shorts.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-showreel-teaser.mp4</video:content_loc>
+      <video:duration>12</video:duration>
+      <video:publication_date>2026-11-17T14:30:00+00:00</video:publication_date>
+      <video:tag>AI video showreel</video:tag>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/dragon-sofa/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/dragon-sofa.jpg</video:thumbnail_loc>
+      <video:title>Dragon Fire: AI short</video:title>
+      <video:description>A man sits on a burning sofa in a field at sunset; a dragon lands behind him and blows the fire out with its wings. AI video by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-dragon-sofa.mp4</video:content_loc>
+      <video:duration>10</video:duration>
+      <video:publication_date>2026-11-17T14:30:00+00:00</video:publication_date>
+      <video:tag>AI video</video:tag>
+      <video:tag>AI short film</video:tag>
+      <video:tag>AI film</video:tag>
+      <video:tag>AI action scene</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/brand-versus/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/brand-versus.jpg</video:thumbnail_loc>
+      <video:title>Brand Versus: AI video ad concept</video:title>
+      <video:description>Two brand owners settle it on a basketball court, cut like the intro of a fighting game. An AI video ad concept by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-brand-versus.mp4</video:content_loc>
+      <video:duration>30</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/parking-fight/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/parking-fight.jpg</video:thumbnail_loc>
+      <video:title>Parking Fight: AI action short</video:title>
+      <video:description>A fight in a parking garage, built shot by shot with AI and cut on the hits. AI video by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-parking-fight.mp4</video:content_loc>
+      <video:duration>14</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI video</video:tag>
+      <video:tag>AI short film</video:tag>
+      <video:tag>AI film</video:tag>
+      <video:tag>AI action scene</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/gun-shot/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/gun-shot.jpg</video:thumbnail_loc>
+      <video:title>Gun Shot: AI action short</video:title>
+      <video:description>A soldier pinned down in a concrete corridor. The muzzle flashes, falling shells and dust are all generated. AI video by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-gun-shot.mp4</video:content_loc>
+      <video:duration>25</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI video</video:tag>
+      <video:tag>AI short film</video:tag>
+      <video:tag>AI film</video:tag>
+      <video:tag>AI action scene</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/turkish-teaser/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/turkish-teaser.jpg</video:thumbnail_loc>
+      <video:title>Crime drama teaser: AI series teaser</video:title>
+      <video:description>A teaser in the style of a crime drama series: black coats, stone stairs and a drawn gun. AI video by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-turkish-teaser.mp4</video:content_loc>
+      <video:duration>19</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI video</video:tag>
+      <video:tag>AI short film</video:tag>
+      <video:tag>AI film</video:tag>
+      <video:tag>AI action scene</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/night-crew/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/night-crew.jpg</video:thumbnail_loc>
+      <video:title>Night Crew: AI product ad concept</video:title>
+      <video:description>A tiny work crew climbs out of the dropper and repairs the skin while she sleeps. An AI video ad concept for a made-up serum brand, by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-night-crew.mp4</video:content_loc>
+      <video:duration>18</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/333/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/333.jpg</video:thumbnail_loc>
+      <video:title>3:33: AI music video, best moments</video:title>
+      <video:description>Scarecrows, cracked masks and candle crowns under three moons. Moments from the AI music video for Kia Vafa&#x27;s track 3:33.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-333.mp4</video:content_loc>
+      <video:duration>19</video:duration>
+      <video:publication_date>2026-11-14T12:51:47+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/move-on/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/move-on.jpg</video:thumbnail_loc>
+      <video:title>Move On: AI music video, first minute</video:title>
+      <video:description>The story video for Kia Vafa&#x27;s song Move On. The opening minute with the lyrics on screen.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-move-on.mp4</video:content_loc>
+      <video:duration>56</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/sunken-opera/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/sunken-opera.jpg</video:thumbnail_loc>
+      <video:title>Sunken Opera: AI music video sample</video:title>
+      <video:description>A masked singer and an orchestra of divers in a flooded opera house. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-sunken-opera.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/sky-whale/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/sky-whale.jpg</video:thumbnail_loc>
+      <video:title>Sky Whale Festival: AI music video sample</video:title>
+      <video:description>A festival carried above the clouds on the back of a whale. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-sky-whale.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/vinyl-ocean/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/vinyl-ocean.jpg</video:thumbnail_loc>
+      <video:title>Vinyl Ocean: AI music video sample</video:title>
+      <video:description>A night sea that turns out to be a spinning record. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-vinyl-ocean.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/liquid-speaker/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/liquid-speaker.jpg</video:thumbnail_loc>
+      <video:title>Liquid Speaker: AI music video sample</video:title>
+      <video:description>Sound pulled out of a speaker as liquid light. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-liquid-speaker.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/ice-moon/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/ice-moon.jpg</video:thumbnail_loc>
+      <video:title>Ice Moon Festival: AI music video sample</video:title>
+      <video:description>A procession across the ice to a stage under the northern lights. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-ice-moon.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/jungle-temple/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/jungle-temple.jpg</video:thumbnail_loc>
+      <video:title>Jungle Temple: AI music video sample</video:title>
+      <video:description>A night ceremony with drums at a pyramid in the jungle. AI music video sample by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-jungle-temple.mp4</video:content_loc>
+      <video:duration>8</video:duration>
+      <video:publication_date>2026-11-14T11:32:53+00:00</video:publication_date>
+      <video:tag>AI music video</video:tag>
+      <video:tag>AI video</video:tag>
+      <video:tag>music video</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/ba-wrong-miss/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/ba-wrong-miss.jpg</video:thumbnail_loc>
+      <video:title>Wrong Miss: mix and master, before and after</video:title>
+      <video:description>The same song at the same loudness, first the raw file and then Kia Vafa&#x27;s mix and master.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-ba-wrong-miss.mp4</video:content_loc>
+      <video:duration>14</video:duration>
+      <video:publication_date>2026-11-14T12:51:47+00:00</video:publication_date>
+      <video:tag>mixing and mastering</video:tag>
+      <video:tag>mix engineer</video:tag>
+      <video:tag>mastering engineer</video:tag>
+      <video:tag>before and after mix</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/ba-wtlf/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/ba-wtlf.jpg</video:thumbnail_loc>
+      <video:title>Where the Leaves Fall: mix and master, before and after</video:title>
+      <video:description>The raw mix against the finished master by Kia Vafa, with the rain scene from the song.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-ba-wtlf.mp4</video:content_loc>
+      <video:duration>14</video:duration>
+      <video:publication_date>2026-11-14T12:51:47+00:00</video:publication_date>
+      <video:tag>mixing and mastering</video:tag>
+      <video:tag>mix engineer</video:tag>
+      <video:tag>mastering engineer</video:tag>
+      <video:tag>before and after mix</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/ba-move-on-vocal/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/ba-move-on-vocal.jpg</video:thumbnail_loc>
+      <video:title>Move On vocal: mix, before and after</video:title>
+      <video:description>The raw vocal recording, then Kia Vafa&#x27;s final mix, cut to scenes from the Move On video.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-ba-move-on-vocal.mp4</video:content_loc>
+      <video:duration>15</video:duration>
+      <video:publication_date>2026-11-14T12:51:47+00:00</video:publication_date>
+      <video:tag>mixing and mastering</video:tag>
+      <video:tag>mix engineer</video:tag>
+      <video:tag>mastering engineer</video:tag>
+      <video:tag>before and after mix</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/ba-move-on-lanterns/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/ba-move-on-lanterns.jpg</video:thumbnail_loc>
+      <video:title>Move On lanterns: mix, before and after</video:title>
+      <video:description>The lantern scenes from Move On, switching from the raw recording to Kia Vafa&#x27;s final mix.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-ba-move-on-lanterns.mp4</video:content_loc>
+      <video:duration>15</video:duration>
+      <video:publication_date>2026-11-14T12:51:47+00:00</video:publication_date>
+      <video:tag>mixing and mastering</video:tag>
+      <video:tag>mix engineer</video:tag>
+      <video:tag>mastering engineer</video:tag>
+      <video:tag>before and after mix</video:tag>
+      <video:tag>music producer</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/blog/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/blog/how-to-make-a-suno-song-sound-better/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/blog/how-i-make-an-ai-food-ad/</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-24</lastmod>
   </url>
 </urlset>
