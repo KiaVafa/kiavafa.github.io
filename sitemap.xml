@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://kiavafa.com/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-26</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/mixing-mastering/</loc>
@@ -18,7 +18,7 @@
   </url>
   <url>
     <loc>https://kiavafa.com/ai-ads/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-26</lastmod>
   </url>
   <url>
     <loc>https://kiavafa.com/ai-video/</loc>
@@ -47,6 +47,26 @@
   <url>
     <loc>https://kiavafa.com/sunken-opera/</loc>
     <lastmod>2026-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://kiavafa.com/watch/kestryn-ad/</loc>
+    <lastmod>2026-11-26</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://kiavafa.com/assets/img/v/kestryn-ad.jpg</video:thumbnail_loc>
+      <video:title>KESTRYN: AI running watch ad, AI product commercial concept</video:title>
+      <video:description>A 29 second AI running watch ad for a made-up brand. Every shot is AI video, cut to my own techno track. An AI video ad concept by Kia Vafa.</video:description>
+      <video:content_loc>https://kiavafa.com/assets/video/v-kestryn-ad.mp4</video:content_loc>
+      <video:duration>29</video:duration>
+      <video:publication_date>2026-11-26T16:30:00+00:00</video:publication_date>
+      <video:tag>AI video ad</video:tag>
+      <video:tag>AI ad</video:tag>
+      <video:tag>AI product ad</video:tag>
+      <video:tag>AI commercial</video:tag>
+      <video:tag>product video</video:tag>
+      <video:tag>AI video creator</video:tag>
+      <video:tag>Kia Vafa</video:tag>
+      <video:tag>AI watch ad</video:tag>
+    </video:video>
   </url>
   <url>
     <loc>https://kiavafa.com/watch/auriq-ad/</loc>
